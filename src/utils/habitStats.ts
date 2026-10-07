@@ -99,15 +99,11 @@ export function calculateHabitStats(habit: Habit, referenceDate: Date = new Date
   };
 }
 
+import { triggerNativeHaptic } from './nativeBridge';
+
 // 햅틱 및 쾌감 효과음 피드백 유틸리티
-export function triggerHapticFeedback() {
-  if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-    try {
-      navigator.vibrate([15, 30, 20]);
-    } catch (_) {
-      // ignore
-    }
-  }
+export function triggerHapticFeedback(type: 'light' | 'medium' | 'heavy' | 'success' | 'selection' = 'medium') {
+  triggerNativeHaptic(type);
 }
 
 export function playCompletionSound() {

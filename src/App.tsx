@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
@@ -13,14 +13,89 @@ import { HabitDetailModal } from './components/modals/HabitDetailModal';
 import { SettingsModal } from './components/modals/SettingsModal';
 import { ThemePaletteModal } from './components/modals/ThemePaletteModal';
 import { DDayView } from './components/dday/DDayView';
+import {
+  isNativeApp,
+  syncNativeStatusBar,
+  registerHardwareBackButton,
+  syncWidgetData
+} from './utils/nativeBridge';
 
 const MainContent: React.FC = () => {
-  const { viewMode } = useApp();
+  const {
+    viewMode,
+    events,
+    habits,
+    settings,
+    isEventModalOpen,
+    closeEventModal,
+    isHabitModalOpen,
+    closeHabitModal,
+    activeHabitDetailId,
+    closeHabitDetail,
+    isTaskDrawerOpen,
+    toggleTaskDrawer
+  } = useApp();
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
 
+  // 1. 안드로이드 하드웨어 뒤로가기 버튼(Hardware Back Button) 처리
+  useEffect(() => {
+    const unregister = registerHardwareBackButton(() => {
+      if (isEventModalOpen) {
+        closeEventModal();
+        return true;
+      }
+      if (isHabitModalOpen) {
+        closeHabitModal();
+        return true;
+      }
+      if (activeHabitDetailId) {
+        closeHabitDetail();
+        return true;
+      }
+      if (isSettingsOpen) {
+        setIsSettingsOpen(false);
+        return true;
+      }
+      if (isThemeModalOpen) {
+        setIsThemeModalOpen(false);
+        return true;
+      }
+      if (isTaskDrawerOpen) {
+        toggleTaskDrawer();
+        return true;
+      }
+      return false;
+    });
+
+    return unregister;
+  }, [
+    isEventModalOpen,
+    isHabitModalOpen,
+    activeHabitDetailId,
+    isSettingsOpen,
+    isThemeModalOpen,
+    isTaskDrawerOpen,
+    closeEventModal,
+    closeHabitModal,
+    closeHabitDetail,
+    toggleTaskDrawer
+  ]);
+
+  // 2. 안드로이드 상태표시줄(Status Bar) 테마 동기화
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark') || settings.theme === 'dark';
+    syncNativeStatusBar(isDark);
+  }, [settings.theme]);
+
+  // 3. 홈 화면 위젯(Widget) 지원을 위한 실시간 데이터 브릿지 동기화
+  useEffect(() => {
+    syncWidgetData(events, habits);
+  }, [events, habits]);
+
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-gray-50/50 dark:bg-zinc-950">
+    <div className={`h-screen w-screen overflow-hidden flex flex-col bg-gray-50/50 dark:bg-zinc-950 ${isNativeApp() ? 'pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]' : ''}`}>
       {/* 1. 슬림 상단 헤더 */}
       <Header onOpenSettings={() => setIsSettingsOpen(true)} />
 
