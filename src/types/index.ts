@@ -171,6 +171,16 @@ export interface AppIconPreset {
   textColor: string;
 }
 
+export interface CloudSyncConfig {
+  enabled: boolean;
+  provider: 'supabase' | 'firebase';
+  syncKey: string;
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+  firebaseRtdbUrl?: string;
+  lastSyncedAt?: string;
+}
+
 // 앱 전체 환경 설정
 export interface AppSettings {
   showLunarDates: boolean;
@@ -185,4 +195,5 @@ export interface AppSettings {
   activeAppIconId: string;
   badgeSettings: BadgeSettings;
   showSplitViewOnDesktop: boolean;
+  cloudSync?: CloudSyncConfig;
 }

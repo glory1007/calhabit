@@ -12,6 +12,7 @@ import {
   Sun,
   Moon,
   SlidersHorizontal,
+  Cloud,
 } from 'lucide-react';
 
 interface BottomNavProps {
@@ -27,7 +28,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onQuickAdd,
   toggleDarkMode,
 }) => {
-  const { viewMode, setViewMode } = useApp();
+  const { viewMode, setViewMode, setIsCloudSyncModalOpen, syncConfig } = useApp();
 
   // Across 시그니처 뷰 스위처 항목들
   const navItems: { mode: ViewMode; label: string; icon: React.ReactNode }[] = [
@@ -41,12 +42,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800 px-2 sm:px-6 py-1 flex items-center justify-between select-none shadow-lg">
       <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
-        {/* 모바일 화면 전용: 좌측 하단 주요 액션 버튼 (일정 추가, 테마 토글, 설정) */}
-        <div className="flex sm:hidden items-center gap-1 shrink-0 pr-1.5 mr-1 border-r border-gray-200 dark:border-zinc-800">
+        {/* 모바일 화면 전용: 좌측 하단 주요 액션 버튼 (일정 추가, 테마 토글, 클라우드 동기화, 설정) */}
+        <div className="flex sm:hidden items-center gap-0.5 shrink-0 pr-1 mr-1 border-r border-gray-200 dark:border-zinc-800">
           {onQuickAdd && (
             <button
               onClick={onQuickAdd}
-              className="w-8 h-8 rounded-xl bg-[#4B6B88] active:bg-[#3D566E] text-white flex items-center justify-center shadow-xs transition-transform active:scale-95 shrink-0"
+              className="w-8 h-8 rounded-xl bg-[#2196F3] active:bg-[#1E88E5] text-white flex items-center justify-center shadow-xs transition-transform active:scale-95 shrink-0"
               title="일정 추가"
             >
               <Plus size={18} strokeWidth={2.5} />
@@ -63,6 +64,17 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <Moon size={16} className="block dark:hidden text-slate-600" />
             </button>
           )}
+
+          <button
+            onClick={() => setIsCloudSyncModalOpen(true)}
+            className="w-8 h-8 rounded-xl text-slate-600 dark:text-zinc-300 active:bg-slate-100 dark:active:bg-zinc-800 flex items-center justify-center transition-colors shrink-0 relative"
+            title="실시간 클라우드 동기화"
+          >
+            <Cloud size={16} className={syncConfig?.enabled ? 'text-blue-500' : ''} />
+            {syncConfig?.enabled && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white dark:ring-zinc-900" />
+            )}
+          </button>
 
           {onOpenSettings && (
             <button

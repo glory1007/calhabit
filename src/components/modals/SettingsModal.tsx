@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Moon, Volume2, Smartphone, Calendar, CloudSun, RotateCcw } from 'lucide-react';
+import { X, Moon, Volume2, Smartphone, Calendar, CloudSun, RotateCcw, Cloud } from 'lucide-react';
 import { INITIAL_EVENTS, INITIAL_HABITS, INITIAL_TODOS, INITIAL_CATEGORIES } from '../../data/mockData';
 
 interface SettingsModalProps {
@@ -9,7 +9,7 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
-  const { settings, updateSettings } = useApp();
+  const { settings, updateSettings, syncConfig, setIsCloudSyncModalOpen } = useApp();
 
   if (!isOpen) return null;
 
@@ -113,7 +113,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           {/* 햅틱 & 사운드 피드백 토글 */}
           <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-zinc-800">
             <div className="flex items-center gap-2">
-              <Volume2 size={16} className="text-[#7A9A8B]" />
+              <Volume2 size={16} className="text-[#2ECC71]" />
               <span className="text-sm font-semibold text-gray-800 dark:text-zinc-200">
                 습관 달성 완료 사운드 & 햅틱
               </span>
@@ -121,10 +121,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             <button
               onClick={() => updateSettings({ soundEnabled: !settings.soundEnabled, hapticEnabled: !settings.hapticEnabled })}
               className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center ${
-                settings.soundEnabled ? 'bg-[#5B84B1] justify-end' : 'bg-gray-300 dark:bg-zinc-700 justify-start'
+                settings.soundEnabled ? 'bg-[#2196F3] justify-end' : 'bg-gray-300 dark:bg-zinc-700 justify-start'
               }`}
             >
               <div className="w-5 h-5 rounded-full bg-white shadow-xs" />
+            </button>
+          </div>
+
+          {/* 클라우드 실시간 동기화 설정 */}
+          <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Cloud size={18} className="text-blue-500" />
+              <div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
+                  실시간 클라우드 동기화
+                </div>
+                <div className="text-[11px] text-gray-500 dark:text-zinc-400">
+                  {syncConfig?.enabled ? `동기화 키: ${syncConfig.syncKey}` : '모바일 ↔ 노트북 실시간 연동'}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                onClose();
+                setIsCloudSyncModalOpen(true);
+              }}
+              className="px-3 py-1.5 rounded-xl bg-[#2196F3] hover:bg-[#1E88E5] text-white text-xs font-bold transition-all shadow-xs"
+            >
+              {syncConfig?.enabled ? '동기화 관리' : '연동 설정'}
             </button>
           </div>
 
@@ -133,7 +157,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             <span className="text-xs text-gray-500">샘플 데이터 복원</span>
             <button
               onClick={handleResetData}
-              className="px-3 py-1.5 rounded-xl border border-rose-200 text-[#D9777F] hover:bg-rose-50 text-xs font-semibold flex items-center gap-1 transition-colors"
+              className="px-3 py-1.5 rounded-xl border border-rose-200 text-[#E53935] hover:bg-rose-50 text-xs font-semibold flex items-center gap-1 transition-colors"
             >
               <RotateCcw size={13} />
               <span>데이터 초기화</span>

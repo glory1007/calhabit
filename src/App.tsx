@@ -12,6 +12,7 @@ import { HabitDetailModal } from './components/modals/HabitDetailModal';
 import { SettingsModal } from './components/modals/SettingsModal';
 import { ThemePaletteModal } from './components/modals/ThemePaletteModal';
 import { TagManagementModal } from './components/modals/TagManagementModal';
+import { CloudSyncModal } from './components/modals/CloudSyncModal';
 import { DDayView } from './components/dday/DDayView';
 import {
   isNativeApp,
@@ -36,7 +37,9 @@ const MainContent: React.FC = () => {
     toggleTaskDrawer,
     openEventModal,
     openHabitModal,
-    updateSettings
+    updateSettings,
+    isCloudSyncModalOpen,
+    setIsCloudSyncModalOpen,
   } = useApp();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -81,6 +84,10 @@ const MainContent: React.FC = () => {
         closeHabitDetail();
         return true;
       }
+      if (isCloudSyncModalOpen) {
+        setIsCloudSyncModalOpen(false);
+        return true;
+      }
       if (isSettingsOpen) {
         setIsSettingsOpen(false);
         return true;
@@ -99,6 +106,7 @@ const MainContent: React.FC = () => {
     return unregister;
   }, [
     isTagModalOpen,
+    isCloudSyncModalOpen,
     isTimelineOpen,
     isEventModalOpen,
     isHabitModalOpen,
@@ -157,6 +165,10 @@ const MainContent: React.FC = () => {
         onClose={() => setIsThemeModalOpen(false)}
       />
       <TagManagementModal />
+      <CloudSyncModal
+        isOpen={isCloudSyncModalOpen}
+        onClose={() => setIsCloudSyncModalOpen(false)}
+      />
 
       {/* 5. Across 멀티 뷰 스위처 도크 (Dock) & 고정 FAB */}
       <BottomNav

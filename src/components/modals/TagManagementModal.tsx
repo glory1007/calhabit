@@ -122,21 +122,21 @@ export const TagManagementModal: React.FC = () => {
 
             {/* 신규 색상 선택기 */}
             <div>
-              <span className="text-[10px] text-gray-400 dark:text-zinc-500 block mb-1.5">대표 컬러 선택:</span>
-              <div className="grid grid-cols-8 gap-1.5 max-h-24 overflow-y-auto scrollbar-thin p-1 bg-white dark:bg-zinc-800 rounded-xl border border-gray-200/60 dark:border-zinc-700">
+              <span className="text-[10px] text-gray-400 dark:text-zinc-500 block mb-1.5">대표 컬러 선택 (TimeTree 10색):</span>
+              <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5 p-1.5 bg-white dark:bg-zinc-800 rounded-xl border border-gray-200/60 dark:border-zinc-700">
                 {COLOR_PALETTE.map(c => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => setNewTagColor(c.hex)}
                     style={{ backgroundColor: c.hex }}
-                    className={`w-5 h-5 rounded-md transition-transform flex items-center justify-center ${
+                    className={`w-6 h-6 rounded-md transition-transform flex items-center justify-center ${
                       newTagColor.toLowerCase() === c.hex.toLowerCase() ? 'scale-110 ring-2 ring-zinc-900 dark:ring-white shadow-xs' : 'hover:scale-105'
                     }`}
                     title={c.name}
                   >
                     {newTagColor.toLowerCase() === c.hex.toLowerCase() && (
-                      <Check size={11} strokeWidth={3} style={{ color: getContrastTextColor(c.hex) }} />
+                      <Check size={12} strokeWidth={3} className="text-white drop-shadow-xs" />
                     )}
                   </button>
                 ))}
@@ -208,20 +208,20 @@ export const TagManagementModal: React.FC = () => {
                       </div>
 
                       {/* 팔레트 */}
-                      <div className="grid grid-cols-8 gap-1.5 max-h-24 overflow-y-auto scrollbar-thin p-1 bg-gray-50 dark:bg-zinc-900 rounded-xl border border-gray-200/60 dark:border-zinc-700">
+                      <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5 p-1.5 bg-gray-50 dark:bg-zinc-900 rounded-xl border border-gray-200/60 dark:border-zinc-700">
                         {COLOR_PALETTE.map(c => (
                           <button
                             key={c.id}
                             type="button"
                             onClick={() => setEditColor(c.hex)}
                             style={{ backgroundColor: c.hex }}
-                            className={`w-5 h-5 rounded-md transition-transform flex items-center justify-center ${
+                            className={`w-6 h-6 rounded-md transition-transform flex items-center justify-center ${
                               editColor.toLowerCase() === c.hex.toLowerCase() ? 'scale-110 ring-2 ring-zinc-900 dark:ring-white shadow-xs' : 'hover:scale-105'
                             }`}
                             title={c.name}
                           >
                             {editColor.toLowerCase() === c.hex.toLowerCase() && (
-                              <Check size={11} strokeWidth={3} style={{ color: getContrastTextColor(c.hex) }} />
+                              <Check size={12} strokeWidth={3} className="text-white drop-shadow-xs" />
                             )}
                           </button>
                         ))}

@@ -17,6 +17,15 @@ import { format, isSameDay, parseISO, subMonths, addMonths } from 'date-fns';
 import { expandRecurringEvents } from '../utils/recurrence';
 import { triggerHapticFeedback, playCompletionSound } from '../utils/habitStats';
 import confetti from 'canvas-confetti';
+import {
+  CloudSyncSettings,
+  loadSyncConfig,
+  saveSyncConfig,
+  pushToCloud,
+  pullFromCloud,
+  subscribeToSupabaseRealtime,
+  SyncPayload,
+} from '../services/cloudSync';
 
 interface AppContextType {
   // 상태
@@ -43,6 +52,17 @@ interface AppContextType {
   toggleTimeline: () => void;
   isTagModalOpen: boolean;
   setIsTagModalOpen: (open: boolean) => void;
+  isCloudSyncModalOpen: boolean;
+  setIsCloudSyncModalOpen: (open: boolean) => void;
+
+  // 클라우드 실시간 동기화 상태 및 핸들러
+  syncConfig: CloudSyncSettings;
+  syncStatus: 'idle' | 'syncing' | 'synced' | 'error';
+  syncError: string | null;
+  lastSyncedAt: string | null;
+  handleManualPush: () => Promise<{ success: boolean; error?: string }>;
+  handleManualPull: () => Promise<{ success: boolean; error?: string }>;
+  handleUpdateSyncConfig: (config: CloudSyncSettings) => void;
 
   // 상태 변경 함수
   setSelectedDate: (date: Date) => void;
@@ -168,6 +188,110 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const toggleTimeline = () => setIsTimelineOpen(prev => !prev);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [isCloudSyncModalOpen, setIsCloudSyncModalOpen] = useState(false);
+
+  // 클라우드 동기화 설정 및 상태
+  const [syncConfig, setSyncConfig] = useState<CloudSyncSettings>(() => loadSyncConfig());
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(() => loadSyncConfig().lastSyncedAt || null);
+
+  const isRemoteUpdatingRef = React.useRef(false);
+  const autoPushTimeoutRef = React.useRef<any>(null);
+
+  const applyRemotePayload = (data: SyncPayload) => {
+    isRemoteUpdatingRef.current = true;
+    if (data.events && Array.isArray(data.events)) setEvents(data.events);
+    if (data.habits && Array.isArray(data.habits)) setHabits(data.habits);
+    if (data.todos && Array.isArray(data.todos)) setTodos(data.todos);
+    if (data.categories && Array.isArray(data.categories)) setCategories(data.categories);
+    if (data.settings) setSettings(prev => ({ ...prev, ...data.settings }));
+    setLastSyncedAt(data.updatedAt || new Date().toISOString());
+    setSyncStatus('synced');
+    setSyncError(null);
+    setTimeout(() => {
+      isRemoteUpdatingRef.current = false;
+    }, 1000);
+  };
+
+  const handleUpdateSyncConfig = (config: CloudSyncSettings) => {
+    setSyncConfig(config);
+    saveSyncConfig(config);
+  };
+
+  const handleManualPush = async (): Promise<{ success: boolean; error?: string }> => {
+    setSyncStatus('syncing');
+    setSyncError(null);
+    const res = await pushToCloud(
+      {
+        events,
+        habits,
+        todos,
+        categories,
+        settings,
+      },
+      syncConfig
+    );
+    if (res.success) {
+      setSyncStatus('synced');
+      setLastSyncedAt(new Date().toISOString());
+    } else {
+      setSyncStatus('error');
+      setSyncError(res.error || '업로드 실패');
+    }
+    return res;
+  };
+
+  const handleManualPull = async (): Promise<{ success: boolean; error?: string }> => {
+    setSyncStatus('syncing');
+    setSyncError(null);
+    const res = await pullFromCloud(syncConfig);
+    if (res.success && res.data) {
+      applyRemotePayload(res.data);
+      return { success: true };
+    } else {
+      setSyncStatus('error');
+      setSyncError(res.error || '가져오기 실패');
+      return { success: false, error: res.error };
+    }
+  };
+
+  // 1. 초기 로드 시 클라우드 데이터 가져오기 & Realtime 구독
+  useEffect(() => {
+    if (!syncConfig.enabled || !syncConfig.syncKey) return;
+
+    handleManualPull();
+
+    const unsubscribe = subscribeToSupabaseRealtime(syncConfig, payload => {
+      applyRemotePayload(payload);
+    });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        handleManualPull();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      unsubscribe();
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [syncConfig.enabled, syncConfig.syncKey, syncConfig.provider, syncConfig.supabaseUrl, syncConfig.supabaseAnonKey, syncConfig.firebaseRtdbUrl]);
+
+  // 2. 데이터 변경 시 자동 업로드 (Debounced Push)
+  useEffect(() => {
+    if (!syncConfig.enabled || !syncConfig.syncKey || isRemoteUpdatingRef.current) return;
+
+    if (autoPushTimeoutRef.current) clearTimeout(autoPushTimeoutRef.current);
+    autoPushTimeoutRef.current = setTimeout(() => {
+      handleManualPush();
+    }, 800);
+
+    return () => {
+      if (autoPushTimeoutRef.current) clearTimeout(autoPushTimeoutRef.current);
+    };
+  }, [events, habits, todos, categories, settings]);
 
   // 로컬 스토리지 동기화
   useEffect(() => {
@@ -561,6 +685,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteTodo,
         assignTodoToSchedule,
         toggleTaskDrawer,
+        isCloudSyncModalOpen,
+        setIsCloudSyncModalOpen,
+        syncConfig,
+        syncStatus,
+        syncError,
+        lastSyncedAt,
+        handleManualPush,
+        handleManualPull,
+        handleUpdateSyncConfig,
         filteredEvents,
         getEventsForDate,
       }}

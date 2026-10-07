@@ -308,11 +308,12 @@ export const HabitModal: React.FC = () => {
                 대표 색상
               </label>
               <div className="flex items-center gap-1.5 overflow-x-auto p-1.5 bg-gray-50 dark:bg-zinc-850 rounded-xl border border-gray-200 dark:border-zinc-700">
-                {COLOR_PALETTE.slice(0, 10).map(c => (
+                {COLOR_PALETTE.map(c => (
                   <button
                     type="button"
                     key={c.id}
                     onClick={() => setColorHex(c.hex)}
+                    title={c.name}
                     className={`w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-transform ${
                       colorHex === c.hex ? 'scale-110 ring-2 ring-zinc-900 dark:ring-white' : ''
                     }`}

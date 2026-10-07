@@ -15,6 +15,7 @@ import {
   Sun,
   Moon,
   ListFilter,
+  Cloud,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -38,6 +39,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
     settings,
     updateSettings,
     toggleTaskDrawer,
+    setIsCloudSyncModalOpen,
+    syncConfig,
   } = useApp();
 
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
@@ -173,6 +176,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
             <Moon size={17} className="block dark:hidden text-slate-600" />
           </button>
 
+          {/* 클라우드 동기화 버튼 */}
+          <button
+            onClick={() => setIsCloudSyncModalOpen(true)}
+            title={syncConfig?.enabled ? `클라우드 실시간 동기화 활성 (${syncConfig.syncKey})` : '클라우드 동기화 설정'}
+            className="p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0 relative"
+          >
+            <Cloud size={17} className={syncConfig?.enabled ? 'text-blue-500' : ''} />
+            {syncConfig?.enabled && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
+            )}
+          </button>
+
           <button
             onClick={onOpenSettings}
             title="설정"
@@ -181,10 +196,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
             <SlidersHorizontal size={17} />
           </button>
 
-          {/* 추가 버튼 (모바일: 콤팩트 정사각형 아이콘, 데스크톱: + 일정 추가) */}
+          {/* 추가 버튼 (TimeTree 블루 테마) */}
           <button
             onClick={handleQuickAdd}
-            className="flex items-center justify-center gap-1 p-1.5 sm:px-3 sm:py-1.5 bg-[#4B6B88] hover:bg-[#3D566E] text-white rounded-lg text-xs font-semibold shadow-2xs transition-transform active:scale-95 shrink-0 ml-0.5"
+            className="flex items-center justify-center gap-1 p-1.5 sm:px-3 sm:py-1.5 bg-[#2196F3] hover:bg-[#1E88E5] text-white rounded-lg text-xs font-semibold shadow-2xs transition-transform active:scale-95 shrink-0 ml-0.5"
             title="일정 추가"
           >
             <Plus size={16} />

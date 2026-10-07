@@ -812,13 +812,15 @@ export const EventModal: React.FC = () => {
             </select>
           </div>
 
-          {/* Across 스타일 32종 커스텀 컬러 팔레트 그리드 */}
+          {/* TimeTree 공식 10대 컬러 테마 팔레트 그리드 */}
           <div>
             <label className="block text-[11px] font-semibold text-gray-500 dark:text-zinc-400 mb-1.5 flex items-center justify-between">
-              <span>색상 팔레트</span>
-              <span className="font-mono text-[10px] text-gray-400">{colorHex}</span>
+              <span>TimeTree 컬러 테마</span>
+              <span className="text-[10px] text-gray-500 font-medium">
+                {COLOR_PALETTE.find(c => c.hex.toLowerCase() === colorHex.toLowerCase())?.name || colorHex}
+              </span>
             </label>
-            <div className="grid grid-cols-8 gap-2 p-2.5 bg-gray-50 dark:bg-zinc-850 rounded-2xl border border-gray-200/80 dark:border-zinc-750 max-h-36 overflow-y-auto scrollbar-thin">
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 p-2.5 bg-gray-50 dark:bg-zinc-850 rounded-2xl border border-gray-200/80 dark:border-zinc-750">
               {COLOR_PALETTE.map(c => {
                 const isSelected = colorHex.toLowerCase() === c.hex.toLowerCase();
                 return (
@@ -827,7 +829,7 @@ export const EventModal: React.FC = () => {
                     type="button"
                     onClick={() => setColorHex(c.hex)}
                     title={c.name}
-                    className={`w-7 h-7 rounded-full transition-transform flex items-center justify-center ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-transform flex items-center justify-center mx-auto ${
                       isSelected ? 'scale-110 ring-2 ring-offset-2 ring-slate-800 dark:ring-white z-10' : 'hover:scale-105'
                     }`}
                     style={{ backgroundColor: c.hex }}

@@ -380,9 +380,9 @@ export const WeeklyTimetable: React.FC = () => {
                         style={{
                           top: `${topPx}px`,
                           height: `${Math.max(28, heightPx - 2)}px`,
-                          backgroundColor: isTask ? `${evt.colorHex}18` : evt.colorHex,
-                          borderColor: isTask ? evt.colorHex : undefined,
-                          color: isTask ? evt.colorHex : contrastColor,
+                          backgroundColor: isTask ? `${evt.colorHex}26` : evt.colorHex,
+                          borderColor: isTask ? `${evt.colorHex}66` : undefined,
+                          color: isTask ? evt.colorHex : '#FFFFFF',
                         }}
                         title={`${evt.title}`}
                       >

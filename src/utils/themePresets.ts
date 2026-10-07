@@ -160,8 +160,24 @@ export const THEME_PRESETS: ThemeConfig[] = [
   },
 ];
 
-// [이미지 2] Across 일괄 컬러 팔레트 팩 (카테고리 일괄 톤온톤 동기화용)
+// [TimeTree 공식 10대 컬러 테마 팩]
 export const PALETTE_SETS: PaletteSet[] = [
+  {
+    id: 'palette_timetree',
+    name: 'TimeTree 시그니처 10색',
+    colors: [
+      '#2ECC71', // 에메랄드 그린
+      '#00BCD4', // 모던 사이언
+      '#2196F3', // 딥 스카이블루
+      '#8D6E63', // 파스텔 브라운
+      '#263238', // 미드나잇 블랙
+      '#E53935', // 애플 레드
+      '#E91E63', // 프렌치 로즈
+      '#FF7043', // 코랄 핑크
+      '#FFA000', // 브라이트 오렌지
+      '#9C27B0', // 소프트 바이올렛
+    ],
+  },
   {
     id: 'palette_pastel',
     name: '파스텔 블라썸',

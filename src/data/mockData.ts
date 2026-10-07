@@ -1,13 +1,13 @@
 import { ScheduleEvent, Habit, TodoItem, CategoryFolder } from '../types';
 import { format, addDays, subDays } from 'date-fns';
 
-// Across 캘린더 감성의 차분하고 편안한 소프트 톤온톤 카테고리
+// TimeTree 공식 10대 대표 컬러 기반 카테고리 (애플 레드, 딥 스카이블루, 코랄 핑크, 에메랄드 그린, 모던 사이언)
 export const INITIAL_CATEGORIES: CategoryFolder[] = [
-  { id: 'cat-personal', name: '개인', colorHex: '#D9777F', emoji: '👤', isDefault: true },
-  { id: 'cat-work', name: '업무', colorHex: '#5B84B1', emoji: '💼', isDefault: true },
-  { id: 'cat-holiday', name: '공휴일', colorHex: '#D27D60', emoji: '🏖️', isDefault: true },
-  { id: 'cat-health', name: '건강/루틴', colorHex: '#7A9A8B', emoji: '🏃', isDefault: true },
-  { id: 'cat-custom', name: '프로젝트', colorHex: '#DDB165', emoji: '💡', isDefault: false },
+  { id: 'cat-personal', name: '개인', colorHex: '#E53935', emoji: '👤', isDefault: true },
+  { id: 'cat-work', name: '업무', colorHex: '#2196F3', emoji: '💼', isDefault: true },
+  { id: 'cat-holiday', name: '공휴일', colorHex: '#FF7043', emoji: '🏖️', isDefault: true },
+  { id: 'cat-health', name: '건강/루틴', colorHex: '#2ECC71', emoji: '🏃', isDefault: true },
+  { id: 'cat-custom', name: '프로젝트', colorHex: '#00BCD4', emoji: '💡', isDefault: false },
 ];
 
 const today = new Date();
@@ -24,7 +24,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${todayStr}T09:30:00`,
     endDateTime: `${todayStr}T11:00:00`,
     categoryFolderId: 'cat-work',
-    colorHex: '#5B84B1',
+    colorHex: '#2196F3',
     location: '회의실 A',
     memo: '주간 스프린트 진행 현황 점검',
   },
@@ -35,7 +35,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${todayStr}T12:00:00`,
     endDateTime: `${todayStr}T13:00:00`,
     categoryFolderId: 'cat-personal',
-    colorHex: '#D4A373',
+    colorHex: '#FFA000',
     location: '센터원 카페',
   },
   {
@@ -45,7 +45,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${todayStr}T14:00:00`,
     endDateTime: `${todayStr}T15:30:00`,
     categoryFolderId: 'cat-work',
-    colorHex: '#4B6B88',
+    colorHex: '#2196F3',
     location: '온라인 세션',
     memo: '코어 아키텍처 및 타임라인 싱크 점검',
   },
@@ -56,7 +56,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${todayStr}T19:00:00`,
     endDateTime: `${todayStr}T20:15:00`,
     categoryFolderId: 'cat-health',
-    colorHex: '#7A9A8B',
+    colorHex: '#2ECC71',
     location: '바디랩',
   },
   {
@@ -66,7 +66,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${todayStr}T00:00:00`,
     endDateTime: `${todayStr}T23:59:59`,
     categoryFolderId: 'cat-holiday',
-    colorHex: '#D27D60',
+    colorHex: '#FF7043',
   },
   {
     id: 'evt-6',
@@ -75,7 +75,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${tomorrowStr}T00:00:00`,
     endDateTime: `${tomorrowStr}T23:59:59`,
     categoryFolderId: 'cat-personal',
-    colorHex: '#D9777F',
+    colorHex: '#E53935',
     lunarDate: { month: 8, day: 26, isLeap: false },
     repeatRule: {
       frequency: 'YEARLY_LUNAR',
@@ -90,7 +90,7 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     startDateTime: `${tomorrowStr}T16:00:00`,
     endDateTime: `${tomorrowStr}T17:30:00`,
     categoryFolderId: 'cat-custom',
-    colorHex: '#DDB165',
+    colorHex: '#FFA000',
   },
   {
     id: 'evt-8',
@@ -98,8 +98,8 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     isAllDay: true,
     startDateTime: `${day3Str}T00:00:00`,
     endDateTime: `${day3Str}T23:59:59`,
-    categoryFolderId: 'cat-personal',
-    colorHex: '#7692A8',
+    categoryFolderId: 'cat-custom',
+    colorHex: '#00BCD4',
   },
 ];
 

@@ -451,9 +451,9 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
                     width: `${widthPx}px`,
                     top: `${topPx}px`,
                     height: '34px',
-                    backgroundColor: seg.event.isTask ? `${seg.event.colorHex}18` : seg.event.colorHex,
-                    borderColor: seg.event.isTask ? seg.event.colorHex : undefined,
-                    color: seg.event.isTask ? seg.event.colorHex : getContrastTextColor(seg.event.colorHex),
+                    backgroundColor: seg.event.isTask ? `${seg.event.colorHex}26` : seg.event.colorHex,
+                    borderColor: seg.event.isTask ? `${seg.event.colorHex}66` : undefined,
+                    color: seg.event.isTask ? seg.event.colorHex : '#FFFFFF',
                   }}
                   title={`${seg.event.title} (${timeRangeText})${seg.event.location ? ` - ${seg.event.location}` : ''}`}
                 >

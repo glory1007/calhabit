@@ -201,14 +201,16 @@ export const MonthCalendar: React.FC = () => {
       const hasHidden = hiddenCounts.some(c => c > 0);
       const maxVisibleRow = visibleSegments.reduce((max, s) => Math.max(max, s.row), -1);
       const displayRows = hasHidden ? 4 : Math.max(2, maxVisibleRow + 1);
-      dynamicWeekHeight = Math.max(100, 30 + displayRows * 22 + 6);
+      // 음력 일자 표시 시 헤더 높이 42px 반영 (음력 날짜 가림 버그 완전 차단)
+      const headerTopOffset = settings.showLunarDates ? 42 : 30;
+      dynamicWeekHeight = Math.max(105, headerTopOffset + displayRows * 22 + 6);
     } else {
       // PC/대화면: 모든 일정 100% 노출 & 넉넉한 세로 높이 보장
       visibleSegments = packedSegments;
       const maxRow = packedSegments.reduce((max, s) => Math.max(max, s.row), -1);
       const totalRowCount = maxRow + 1;
-      // 상단 헤더 영역(34px) + 각 행 26px (22px 높이 + 4px 간격) + 하단 여백(12px)
-      const neededHeight = 34 + totalRowCount * 26 + 12;
+      const headerTopOffset = settings.showLunarDates ? 46 : 34;
+      const neededHeight = headerTopOffset + totalRowCount * 26 + 14;
       dynamicWeekHeight = Math.max(120, neededHeight);
     }
 
@@ -401,8 +403,14 @@ export const MonthCalendar: React.FC = () => {
                                 : ''
                             }`}
                           >
-                            {/* 상단 양력 + 음력 (가운데 정렬) */}
-                            <div className="relative flex items-center justify-center w-full mb-0.5 shrink-0 px-0.5 min-h-[24px]">
+                            {/* 상단 양력 + 음력 (가운데 정렬 및 음력 날짜 가림 방지 안전 여백 확보) */}
+                            <div
+                              className={`relative flex flex-col items-center justify-start w-full mb-1 shrink-0 px-0.5 ${
+                                settings.showLunarDates && isCurMonth
+                                  ? 'min-h-[38px] sm:min-h-[42px]'
+                                  : 'min-h-[26px] sm:min-h-[28px]'
+                              }`}
+                            >
                               {/* 타임라인 시계 버튼 (선택된 셀 좌측에 배치) */}
                               {isSelected && (
                                 <button
@@ -411,7 +419,7 @@ export const MonthCalendar: React.FC = () => {
                                     e.stopPropagation();
                                     setIsTimelineOpen(!isTimelineOpen);
                                   }}
-                                  className={`absolute left-0.5 p-0.5 rounded transition-colors z-10 ${
+                                  className={`absolute left-0.5 top-0.5 p-0.5 rounded transition-colors z-10 ${
                                     isTimelineOpen
                                       ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300'
                                       : 'text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200'
@@ -441,7 +449,7 @@ export const MonthCalendar: React.FC = () => {
                                 </span>
 
                                 {settings.showLunarDates && isCurMonth && (
-                                  <span className="text-[8px] sm:text-[9px] text-gray-400 dark:text-zinc-500 font-normal tabular-nums leading-none truncate mt-0.5">
+                                  <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-zinc-400 font-medium tabular-nums leading-none truncate mt-0.5">
                                     {lunarText}
                                   </span>
                                 )}
@@ -452,14 +460,15 @@ export const MonthCalendar: React.FC = () => {
                       })}
                     </div>
 
-                    {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (다일 일정은 날짜 사이 끊김 없이 완전히 이어진 단일 바로 렌더링!) */}
+                    {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (음력 텍스트 아래에서부터 시작하도록 상단 패딩 확보) */}
                     <div
-                      className="absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[20px] sm:auto-rows-[22px] gap-y-0.5 sm:gap-y-1 w-full pt-7 sm:pt-7.5 pb-1 pointer-events-none z-10 transition-all"
+                      className={`absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[20px] sm:auto-rows-[22px] gap-y-0.5 sm:gap-y-1 w-full pb-1 pointer-events-none z-10 transition-all ${
+                        settings.showLunarDates ? 'pt-[42px] sm:pt-[48px]' : 'pt-7 sm:pt-7.5'
+                      }`}
                       style={{ minHeight: `${dynamicWeekHeight}px` }}
                     >
                       {visibleSegments.map(item => {
                         const isTask = item.event.isTask;
-                        const contrastColor = getContrastTextColor(item.event.colorHex);
 
                         const containerStyle: React.CSSProperties = {
                           gridColumn: `${item.startCol + 1} / span ${item.colSpan}`,
@@ -473,15 +482,16 @@ export const MonthCalendar: React.FC = () => {
                         }`;
 
                         if (!isTask) {
-                          // [규칙 2] 일정: 선택한 색상으로 완전 채움 (Solid Fill) + 명암비 최적화 텍스트
+                          // [TimeTree 규칙 1] 일정 (Event): 선택한 TimeTree 컬러 완전 채움 (Solid Color Fill) + 선명한 흰색(White, #FFFFFF) 고정
                           containerStyle.backgroundColor = item.event.colorHex;
-                          containerStyle.color = contrastColor;
+                          containerStyle.color = '#FFFFFF';
+                          containerClasses += ' font-semibold';
                         } else {
-                          // [규칙 2] 할일: 바탕색은 은은한 테두리만 (Outline) + 텍스트 색상
-                          containerStyle.backgroundColor = `${item.event.colorHex}18`;
-                          containerStyle.borderColor = item.event.colorHex;
+                          // [TimeTree 규칙 2] 할일 (To-Do): 15~20% 은은한 틴트 배경 + 선택한 원래의 진한 TimeTree 고유 색상 글자
+                          containerStyle.backgroundColor = `${item.event.colorHex}26`;
+                          containerStyle.borderColor = `${item.event.colorHex}66`;
                           containerStyle.color = item.event.colorHex;
-                          containerClasses += ' border-[1.5px]';
+                          containerClasses += ' border-[1.5px] font-semibold';
                         }
 
                         return (
