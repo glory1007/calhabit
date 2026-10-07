@@ -199,7 +199,7 @@ export const AcrossTimeline: React.FC<AcrossTimelineProps> = ({ date, isInlineVi
                   title={`${evt.title} (${formatTimeRange(evt.startDateTime, evt.endDateTime)})`}
                 >
                   {widthPercent >= 3.5 ? (
-                    <span className="text-[11px] font-bold truncate leading-tight w-full text-center">
+                    <span className="text-[11px] font-bold truncate leading-tight w-full text-right pr-1">
                       {evt.title}
                     </span>
                   ) : (

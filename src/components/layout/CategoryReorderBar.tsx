@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { triggerHapticFeedback } from '../../utils/habitStats';
 import { Check, GripVertical, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { getCategoryEmoji } from '../../utils/categoryEmoji';
 
 interface CategoryReorderBarProps {
   collapsible?: boolean;
@@ -154,39 +155,33 @@ export const CategoryReorderBar: React.FC<CategoryReorderBarProps> = ({ collapsi
                 onDragEnd={handleDragEnd}
                 onTouchStart={e => handleTouchStart(idx, e)}
                 onClick={() => handleChipClick(cat.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-grab active:cursor-grabbing border ${
+                className={`relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl transition-all shrink-0 cursor-grab active:cursor-grabbing border ${
                   isElevated
-                    ? 'scale-105 shadow-xl -translate-y-1 opacity-95 ring-2 ring-emerald-500 z-30'
+                    ? 'scale-110 shadow-xl -translate-y-1 opacity-95 ring-2 ring-emerald-500 z-30'
                     : isOverTarget
                     ? 'border-dashed border-2 border-emerald-500 bg-emerald-50/50 scale-95 opacity-80'
-                    : 'shadow-2xs hover:scale-[1.02]'
+                    : 'shadow-2xs hover:scale-105'
                 } ${
                   isChecked
-                    ? 'text-white border-transparent'
-                    : 'bg-gray-100 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-500 opacity-60'
+                    ? 'border-transparent shadow-xs'
+                    : 'bg-gray-100 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 opacity-40 grayscale'
                 }`}
                 style={{
                   backgroundColor: isChecked ? cat.colorHex : undefined,
-                  transform: isElevated ? 'scale(1.06) translateY(-2px)' : undefined,
+                  transform: isElevated ? 'scale(1.1) translateY(-2px)' : undefined,
                 }}
-                title="길게 누르거나 드래그하여 순서 변경, 클릭하여 필터 토글"
+                title={`${cat.name || '태그'} (클릭하여 토글, 드래그하여 순서변경)`}
               >
-                {/* 롱프레스 & 드래그 핸들 그립 아이콘 */}
-                <GripVertical
-                  size={12}
-                  className={`cursor-grab opacity-60 hover:opacity-100 ${isChecked ? 'text-white' : 'text-gray-400'}`}
-                />
+                <span className="text-sm sm:text-base leading-none select-none filter drop-shadow-xs">
+                  {getCategoryEmoji(cat)}
+                </span>
 
-                {/* 체크박스 박스 */}
-                <div
-                  className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${
-                    isChecked ? 'bg-white/25' : 'bg-gray-300 dark:bg-zinc-700'
-                  }`}
-                >
-                  {isChecked && <Check size={11} strokeWidth={3} className="text-white" />}
-                </div>
-
-                <span className="truncate max-w-[120px]">{cat.name}</span>
+                {/* 활성화 상태 체크 표시 */}
+                {isChecked && (
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-white dark:bg-zinc-900 flex items-center justify-center shadow-xs">
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.colorHex }} />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -195,11 +190,11 @@ export const CategoryReorderBar: React.FC<CategoryReorderBarProps> = ({ collapsi
           <button
             type="button"
             onClick={() => setIsTagModalOpen(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 transition-colors shrink-0 border border-slate-200 dark:border-zinc-700 shadow-2xs"
-            title="태그 추가 및 색상 관리"
+            className="flex items-center justify-center w-8 h-8 sm:w-auto sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 transition-colors shrink-0 border border-slate-200 dark:border-zinc-700 shadow-2xs"
+            title="태그 추가 및 색상/이모지 관리"
           >
-            <Plus size={13} />
-            <span>태그 관리</span>
+            <Plus size={14} />
+            <span className="hidden sm:inline ml-1">태그 관리</span>
           </button>
         </div>
 

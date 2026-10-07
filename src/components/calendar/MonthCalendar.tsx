@@ -353,9 +353,29 @@ export const MonthCalendar: React.FC = () => {
                                 : ''
                             }`}
                           >
-                            {/* 상단 양력 + 음력 + 날씨 */}
-                            <div className="flex items-center justify-between w-full mb-0.5 shrink-0 px-0.5">
-                              <div className="flex items-baseline gap-1 min-w-0">
+                            {/* 상단 양력 + 음력 + 날씨 (가운데 정렬) */}
+                            <div className="relative flex items-center justify-center w-full mb-0.5 shrink-0 px-0.5 min-h-[24px]">
+                              {/* 타임라인 시계 버튼 (선택된 셀 좌측에 배치) */}
+                              {isSelected && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsTimelineOpen(!isTimelineOpen);
+                                  }}
+                                  className={`absolute left-0.5 p-0.5 rounded transition-colors z-10 ${
+                                    isTimelineOpen
+                                      ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300'
+                                      : 'text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200'
+                                  }`}
+                                  title={isTimelineOpen ? '24시간 타임라인 닫기' : '24시간 타임라인 열기'}
+                                >
+                                  <Clock size={11} />
+                                </button>
+                              )}
+
+                              {/* 날짜 숫자 & 은은한 음력 텍스트 (중앙 정렬) */}
+                              <div className="flex flex-col items-center justify-center min-w-0">
                                 <span
                                   className={`text-xs sm:text-[13px] font-semibold w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform tabular-nums shrink-0 ${
                                     isCurrentDay
@@ -373,41 +393,22 @@ export const MonthCalendar: React.FC = () => {
                                 </span>
 
                                 {settings.showLunarDates && isCurMonth && (
-                                  <span className="text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 font-normal tabular-nums leading-none truncate">
+                                  <span className="text-[8px] sm:text-[9px] text-gray-400 dark:text-zinc-500 font-normal tabular-nums leading-none truncate mt-0.5">
                                     {lunarText}
                                   </span>
                                 )}
                               </div>
 
-                              <div className="flex items-center gap-1 shrink-0">
-                                {isSelected && (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setIsTimelineOpen(!isTimelineOpen);
-                                    }}
-                                    className={`p-0.5 rounded transition-colors ${
-                                      isTimelineOpen
-                                        ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300'
-                                        : 'text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200'
-                                    }`}
-                                    title={isTimelineOpen ? '24시간 타임라인 닫기' : '24시간 타임라인 열기'}
-                                  >
-                                    <Clock size={11} />
-                                  </button>
-                                )}
-
-                                {settings.showWeather && isCurMonth && (
-                                  <div
-                                    className="text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 flex items-center gap-0.5 shrink-0"
-                                    title={`${weather.summary} ${weather.tempHigh}°/${weather.tempLow}°`}
-                                  >
-                                    <span className="text-[10px] sm:text-xs leading-none">{weather.icon}</span>
-                                    <span className="hidden sm:inline font-normal">{weather.tempHigh}°</span>
-                                  </div>
-                                )}
-                              </div>
+                              {/* 날씨 (우측에 배치) */}
+                              {settings.showWeather && isCurMonth && (
+                                <div
+                                  className="absolute right-0.5 text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 flex items-center gap-0.5 shrink-0"
+                                  title={`${weather.summary} ${weather.tempHigh}°/${weather.tempLow}°`}
+                                >
+                                  <span className="text-[10px] sm:text-xs leading-none">{weather.icon}</span>
+                                  <span className="hidden sm:inline font-normal">{weather.tempHigh}°</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -420,8 +421,6 @@ export const MonthCalendar: React.FC = () => {
                       style={{ minHeight: `${dynamicWeekHeight}px` }}
                     >
                       {visibleSegments.map(item => {
-                        const isTimed = !item.event.isAllDay;
-                        const timeStr = isTimed && item.isFirstWeekOfEvent ? format(parseISO(item.event.startDateTime), 'HH:mm') : '';
                         const isTask = item.event.isTask;
                         const contrastColor = getContrastTextColor(item.event.colorHex);
 
@@ -430,7 +429,7 @@ export const MonthCalendar: React.FC = () => {
                           gridRow: item.row + 1,
                         };
 
-                        let containerClasses = `h-[19px] sm:h-[21px] text-[10px] sm:text-[11px] font-medium tracking-tight shadow-2xs truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 pointer-events-auto z-10 ${
+                        let containerClasses = `h-[19px] sm:h-[21px] text-[10px] sm:text-[11px] font-medium tracking-tight shadow-2xs truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center justify-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 pointer-events-auto z-10 text-center ${
                           item.isFirstWeekOfEvent ? 'rounded-l-xs sm:rounded-l-sm ml-0.5 sm:ml-1' : 'rounded-l-none ml-0'
                         } ${
                           item.isLastWeekOfEvent ? 'rounded-r-xs sm:rounded-r-sm mr-0.5 sm:mr-1' : 'rounded-r-none mr-0'
@@ -476,15 +475,8 @@ export const MonthCalendar: React.FC = () => {
                               </button>
                             )}
 
-                            {/* 시작 시간 라벨 (TimeTree 스타일 콤팩트 라벨) */}
-                            {timeStr && (
-                              <span className="opacity-80 text-[8.5px] sm:text-[9.5px] font-mono shrink-0 font-medium leading-none mr-0.5">
-                                {timeStr}
-                              </span>
-                            )}
-
-                            {/* 일정 제목 */}
-                            <span className={`truncate leading-none ${item.event.isCompleted ? 'line-through opacity-70' : ''}`}>
+                            {/* 일정 제목 (시작 시간 텍스트 제거 및 가운데 정렬) */}
+                            <span className={`truncate leading-none text-center w-full ${item.event.isCompleted ? 'line-through opacity-70' : ''}`}>
                               {item.event.title}
                             </span>
                           </div>

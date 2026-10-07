@@ -295,47 +295,42 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
       onTouchEnd={handleTouchEnd}
       className="my-2 p-3 bg-slate-50/80 dark:bg-zinc-850/90 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-xs transition-all relative select-none"
     >
-      {/* 슬림 헤더: 중복 날짜 타이틀 및 중복 버튼 제거, 닫기 버튼 배치 */}
-      <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-200/60 dark:border-zinc-750">
-        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-zinc-200">
-          <Clock size={13} className="text-[#5B84B1]" />
-          <span>24시간 타임라인</span>
-          <span className="text-[11px] text-slate-400 font-normal">({timedSegments.length}개 일정)</span>
-        </div>
-
-        <div className="flex items-center gap-1">
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-200/60 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 text-xs font-semibold"
-              title="타임라인 접기"
-            >
-              <X size={15} />
-              <span className="text-[11px]">닫기</span>
-            </button>
+      {/* 슬림 헤더: 제목 텍스트 완전 삭제, 종일 일정 바 및 닫기 버튼만 슬림하게 배치 */}
+      <div className="flex items-center justify-between gap-2 mb-1.5 min-h-[26px]">
+        {/* 종일 일정 바 */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none flex-1">
+          {allDayEvents.length > 0 && (
+            <>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-zinc-400 shrink-0">
+                종일:
+              </span>
+              {allDayEvents.map(evt => (
+                <div
+                  key={evt.id}
+                  onClick={e => handleBlockClick(e, evt)}
+                  className="px-2 py-0.5 rounded-md text-[11px] font-semibold text-white shadow-2xs cursor-pointer hover:opacity-90 flex items-center gap-1 shrink-0"
+                  style={{ backgroundColor: evt.colorHex }}
+                >
+                  <CalIcon size={11} />
+                  <span>{evt.title}</span>
+                </div>
+              ))}
+            </>
           )}
         </div>
-      </div>
 
-      {/* 종일 일정 바 */}
-      {allDayEvents.length > 0 && (
-        <div className="flex items-center gap-1.5 mb-2 overflow-x-auto pb-1">
-          <span className="text-[10px] font-bold text-gray-500 dark:text-zinc-400 shrink-0">
-            종일:
-          </span>
-          {allDayEvents.map(evt => (
-            <div
-              key={evt.id}
-              onClick={e => handleBlockClick(e, evt)}
-              className="px-2.5 py-1 rounded-md text-xs font-semibold text-white shadow-2xs cursor-pointer hover:opacity-90 flex items-center gap-1 shrink-0"
-              style={{ backgroundColor: evt.colorHex }}
-            >
-              <CalIcon size={12} />
-              <span>{evt.title}</span>
-            </div>
-          ))}
-        </div>
-      )}
+        {/* 닫기 버튼 */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-200/60 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 text-xs font-semibold shrink-0 ml-auto"
+            title="타임라인 접기"
+          >
+            <X size={14} />
+            <span className="text-[11px]">닫기</span>
+          </button>
+        )}
+      </div>
 
       {/* Across 24시간 수평 타임라인 바 & [이미지 5] 드래그 앤 드롭 */}
       <div
@@ -442,8 +437,8 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
                   onMouseDown={e => handleMouseDown(e, seg.event)}
                   onTouchStart={e => handleTouchStart(e, seg.event)}
                   onClick={e => handleBlockClick(e, seg.event)}
-                  className={`absolute rounded-xl shadow-md cursor-grab active:cursor-grabbing transition-shadow flex items-center overflow-hidden z-20 text-left ${
-                    isVeryNarrow ? 'px-1 justify-center' : 'px-2.5 justify-between gap-1.5'
+                  className={`absolute rounded-xl shadow-md cursor-grab active:cursor-grabbing transition-shadow flex items-center overflow-hidden z-20 text-right ${
+                    isVeryNarrow ? 'px-1 justify-center' : 'px-2.5 justify-end gap-1.5'
                   } ${
                     isDragging
                       ? 'scale-105 shadow-2xl ring-2 ring-red-500 border-red-500 opacity-95 z-30'
@@ -462,9 +457,9 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
                   }}
                   title={`${seg.event.title} (${timeRangeText})${seg.event.location ? ` - ${seg.event.location}` : ''}`}
                 >
-                  {/* [요구사항 2]: 15~30분 등 아주 좁은 블록은 텍스트를 숨기고 고유 컬러 칩 형태로만 표시 */}
+                  {/* 15~30분 등 아주 좁은 블록은 텍스트를 숨기고 고유 컬러 칩 형태로만 표시 */}
                   {!isVeryNarrow ? (
-                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                    <div className="flex items-center justify-end gap-1.5 min-w-0 flex-1 text-right">
                       {/* 할일 체크박스 */}
                       {seg.event.isTask && (
                         <button
@@ -484,9 +479,9 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
                         </button>
                       )}
 
-                      {/* [요구사항 2 핵심 수정]: 시간 텍스트 완전 제거, 오직 제목만 깔끔하게 표시 */}
+                      {/* 일정 제목 (오른쪽 정렬) */}
                       <span
-                        className={`truncate font-bold ${
+                        className={`truncate font-bold text-right ml-auto ${
                           isMediumNarrow ? 'text-[10px] leading-tight' : 'text-xs'
                         } ${seg.event.isCompleted ? 'line-through opacity-70' : ''}`}
                       >

@@ -26,7 +26,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         {/* 헤더 */}
         <div className="px-5 py-4 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between">
           <h3 className="text-base font-bold text-gray-900 dark:text-zinc-100">
-            앱 환경 설정
+            설정
           </h3>
           <button
             onClick={onClose}
@@ -61,49 +61,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             </button>
           </div>
 
-          {/* 날씨 예보 연동 토글 */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CloudSun size={18} className="text-[#5B84B1]" />
-              <div>
-                <div className="text-sm font-semibold text-gray-800 dark:text-zinc-200">
-                  실시간 날씨 예보 연동
-                </div>
-                <div className="text-[11px] text-gray-400">
-                  날짜 셀 및 타임라인에 기상 정보와 최고/최저 기온 표시
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => updateSettings({ showWeather: !settings.showWeather })}
-              className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center ${
-                settings.showWeather ? 'bg-[#5B84B1] justify-end' : 'bg-gray-300 dark:bg-zinc-700 justify-start'
-              }`}
-            >
-              <div className="w-5 h-5 rounded-full bg-white shadow-xs" />
-            </button>
-          </div>
-
-          {/* 주 번호 표시 토글 */}
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-gray-800 dark:text-zinc-200">
-                주 번호(Week Number) 표시
-              </div>
-              <div className="text-[11px] text-gray-400">
-                월간 달력 주간 행에 W40, W41 등 주차를 표시합니다
-              </div>
-            </div>
-            <button
-              onClick={() => updateSettings({ showWeekNumbers: !settings.showWeekNumbers })}
-              className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center ${
-                settings.showWeekNumbers ? 'bg-[#5B84B1] justify-end' : 'bg-gray-300 dark:bg-zinc-700 justify-start'
-              }`}
-            >
-              <div className="w-5 h-5 rounded-full bg-white shadow-xs" />
-            </button>
-          </div>
-
           {/* 완료된 할일 숨기기 */}
           <div className="flex items-center justify-between">
             <div>
@@ -111,7 +68,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 완료된 할일 숨기기
               </div>
               <div className="text-[11px] text-gray-400">
-                체크 완료된 목록을 서랍에서 감춥니다
+                체크 완료된 할일을 목록에서 감춥니다
               </div>
             </div>
             <button

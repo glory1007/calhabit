@@ -28,6 +28,7 @@ export interface CategoryFolder {
   id: string;
   name: string;
   colorHex: string;
+  emoji?: string;
   isDefault?: boolean;
 }
 

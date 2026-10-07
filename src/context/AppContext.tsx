@@ -51,8 +51,8 @@ interface AppContextType {
   toggleCategoryFilter: (categoryId: string) => void;
   resetCategoryFilter: () => void;
   reorderCategories: (sourceIndex: number, destIndex: number) => void;
-  addCategory: (name: string, colorHex: string) => void;
-  updateCategory: (id: string, name: string, colorHex: string) => void;
+  addCategory: (name: string, colorHex: string, emoji?: string) => void;
+  updateCategory: (id: string, name: string, colorHex: string, emoji?: string) => void;
   deleteCategory: (id: string) => void;
   updateSettings: (newSettings: Partial<AppSettings>) => void;
 
@@ -131,7 +131,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [categories, setCategories] = useState<CategoryFolder[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
-    return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
+    const parsed: CategoryFolder[] = saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
+    return parsed.map(c => {
+      if (c.emoji) return c;
+      if (c.name.includes('개인')) return { ...c, emoji: '👤' };
+      if (c.name.includes('업무')) return { ...c, emoji: '💼' };
+      if (c.name.includes('공휴일')) return { ...c, emoji: '🏖️' };
+      if (c.name.includes('건강')) return { ...c, emoji: '🏃' };
+      if (c.name.includes('프로젝트')) return { ...c, emoji: '💡' };
+      return { ...c, emoji: '🏷️' };
+    });
   });
 
   const [settings, setSettings] = useState<AppSettings>(() => {
@@ -208,19 +217,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // 태그 신규 추가
-  const addCategory = (name: string, colorHex: string) => {
+  const addCategory = (name: string, colorHex: string, emoji?: string) => {
     const newCat: CategoryFolder = {
       id: `cat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       name: name.trim() || '새 태그',
       colorHex,
+      emoji: emoji || '🏷️',
     };
     setCategories(prev => [...prev, newCat]);
     if (settings.hapticEnabled) triggerHapticFeedback();
   };
 
   // 태그 수정 (색상 변경 시 해당 태그의 모든 일정/할일 색상도 실시간 일괄 동기화!)
-  const updateCategory = (id: string, name: string, colorHex: string) => {
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, name: name.trim(), colorHex } : c));
+  const updateCategory = (id: string, name: string, colorHex: string, emoji?: string) => {
+    setCategories(prev =>
+      prev.map(c =>
+        c.id === id
+          ? {
+              ...c,
+              name: name.trim(),
+              colorHex,
+              ...(emoji !== undefined ? { emoji } : {}),
+            }
+          : c
+      )
+    );
     setEvents(prev => prev.map(e => e.categoryFolderId === id ? { ...e, colorHex } : e));
     setTodos(prev => prev.map(t => t.categoryFolderId === id ? { ...t, colorHex } : t));
     if (settings.hapticEnabled) triggerHapticFeedback();

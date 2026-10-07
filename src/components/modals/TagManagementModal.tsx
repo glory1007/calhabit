@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { COLOR_PALETTE } from '../../utils/colorPalette';
+import { PRESET_EMOJIS, getCategoryEmoji } from '../../utils/categoryEmoji';
 import { X, Plus, Trash2, Edit2, Check, Tag } from 'lucide-react';
 import { getContrastTextColor } from '../../utils/contrastColor';
 
@@ -15,29 +16,31 @@ export const TagManagementModal: React.FC = () => {
   } = useApp();
 
   const [newTagName, setNewTagName] = useState('');
+  const [newTagEmoji, setNewTagEmoji] = useState('👤');
   const [newTagColor, setNewTagColor] = useState(COLOR_PALETTE[0].hex);
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [editEmoji, setEditEmoji] = useState('👤');
   const [editColor, setEditColor] = useState('');
 
   if (!isTagModalOpen) return null;
 
-  const handleStartEdit = (cat: { id: string; name: string; colorHex: string }) => {
+  const handleStartEdit = (cat: { id: string; name: string; colorHex: string; emoji?: string }) => {
     setEditingTagId(cat.id);
     setEditName(cat.name);
+    setEditEmoji(getCategoryEmoji(cat));
     setEditColor(cat.colorHex);
   };
 
   const handleSaveEdit = (id: string) => {
-    if (!editName.trim()) return;
-    updateCategory(id, editName.trim(), editColor);
+    updateCategory(id, editName.trim() || editEmoji, editColor, editEmoji);
     setEditingTagId(null);
   };
 
   const handleAddNewTag = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTagName.trim()) return;
-    addCategory(newTagName.trim(), newTagColor);
+    const finalName = newTagName.trim() || newTagEmoji;
+    addCategory(finalName, newTagColor, newTagEmoji);
     setNewTagName('');
     setNewTagColor(COLOR_PALETTE[(categories.length + 1) % COLOR_PALETTE.length].hex);
   };
@@ -69,22 +72,52 @@ export const TagManagementModal: React.FC = () => {
           {/* 1. 신규 태그 추가 폼 */}
           <form onSubmit={handleAddNewTag} className="p-3.5 bg-slate-50 dark:bg-zinc-850 rounded-2xl border border-slate-200/70 dark:border-zinc-750 space-y-3">
             <span className="text-xs font-bold text-gray-700 dark:text-zinc-300 block">새 태그 추가</span>
-            <div className="flex gap-2">
+            
+            {/* 이모지 및 태그 이름/메모 입력 */}
+            <div className="flex gap-2 items-center">
               <input
                 type="text"
-                placeholder="태그 이름 (예: 독서, 운동, 외식)"
+                value={newTagEmoji}
+                onChange={e => setNewTagEmoji(e.target.value)}
+                maxLength={4}
+                placeholder="이모지"
+                className="w-12 text-center py-2 text-base rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#5B84B1]"
+                title="이모지를 직접 입력하거나 아래에서 선택하세요 (Win + . 지원)"
+              />
+              <input
+                type="text"
+                placeholder="태그 메모/이름 (예: 독서, 운동)"
                 value={newTagName}
                 onChange={e => setNewTagName(e.target.value)}
                 className="flex-1 px-3 py-2 text-xs font-medium rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#5B84B1]"
               />
               <button
                 type="submit"
-                disabled={!newTagName.trim()}
+                disabled={!newTagName.trim() && !newTagEmoji.trim()}
                 className="px-3.5 py-2 bg-[#4B6B88] hover:bg-[#3D566E] disabled:opacity-40 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-2xs transition-all shrink-0"
               >
                 <Plus size={14} />
                 <span>추가</span>
               </button>
+            </div>
+
+            {/* 추천 이모지 빠른 선택 */}
+            <div>
+              <span className="text-[10px] text-gray-400 dark:text-zinc-500 block mb-1">추천 이모지:</span>
+              <div className="flex gap-1 overflow-x-auto scrollbar-none py-0.5">
+                {PRESET_EMOJIS.map(em => (
+                  <button
+                    key={em}
+                    type="button"
+                    onClick={() => setNewTagEmoji(em)}
+                    className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-transform shrink-0 ${
+                      newTagEmoji === em ? 'scale-110 bg-slate-200 dark:bg-zinc-700 ring-2 ring-blue-500' : 'hover:bg-slate-100 dark:hover:bg-zinc-800'
+                    }`}
+                  >
+                    {em}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* 신규 색상 선택기 */}
@@ -119,7 +152,6 @@ export const TagManagementModal: React.FC = () => {
             <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
               {categories.map(cat => {
                 const isEditing = editingTagId === cat.id;
-                const contrast = getContrastTextColor(cat.colorHex);
 
                 if (isEditing) {
                   return (
@@ -127,11 +159,20 @@ export const TagManagementModal: React.FC = () => {
                       key={cat.id}
                       className="p-3 bg-white dark:bg-zinc-800 rounded-2xl border-2 border-[#5B84B1] shadow-md space-y-2.5 animate-in fade-in"
                     >
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          value={editEmoji}
+                          onChange={e => setEditEmoji(e.target.value)}
+                          maxLength={4}
+                          className="w-10 text-center py-1.5 text-base rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-gray-900 dark:text-zinc-100"
+                          title="이모지 수정"
+                        />
                         <input
                           type="text"
                           value={editName}
                           onChange={e => setEditName(e.target.value)}
+                          placeholder="태그 메모"
                           className="flex-1 px-2.5 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-gray-900 dark:text-zinc-100"
                         />
                         <button
@@ -148,6 +189,22 @@ export const TagManagementModal: React.FC = () => {
                         >
                           취소
                         </button>
+                      </div>
+
+                      {/* 이모지 추천 */}
+                      <div className="flex gap-1 overflow-x-auto scrollbar-none py-0.5">
+                        {PRESET_EMOJIS.map(em => (
+                          <button
+                            key={em}
+                            type="button"
+                            onClick={() => setEditEmoji(em)}
+                            className={`w-6 h-6 rounded text-xs flex items-center justify-center transition-transform shrink-0 ${
+                              editEmoji === em ? 'scale-110 bg-slate-200 dark:bg-zinc-600 ring-2 ring-blue-500' : 'hover:bg-slate-100 dark:hover:bg-zinc-750'
+                            }`}
+                          >
+                            {em}
+                          </button>
+                        ))}
                       </div>
 
                       {/* 팔레트 */}
@@ -179,8 +236,11 @@ export const TagManagementModal: React.FC = () => {
                     className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-zinc-800/60 rounded-2xl border border-slate-200/60 dark:border-zinc-750 hover:bg-slate-100/80 transition-colors"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-base leading-none shrink-0">
+                        {getCategoryEmoji(cat)}
+                      </span>
                       <span
-                        className="w-4 h-4 rounded-full shrink-0 shadow-2xs"
+                        className="w-3.5 h-3.5 rounded-full shrink-0 shadow-2xs"
                         style={{ backgroundColor: cat.colorHex }}
                       />
                       <span className="text-xs font-bold text-gray-900 dark:text-zinc-100 truncate">

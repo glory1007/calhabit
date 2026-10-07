@@ -3,11 +3,11 @@ import { format, addDays, subDays } from 'date-fns';
 
 // Across 캘린더 감성의 차분하고 편안한 소프트 톤온톤 카테고리
 export const INITIAL_CATEGORIES: CategoryFolder[] = [
-  { id: 'cat-personal', name: '개인', colorHex: '#D9777F', isDefault: true },
-  { id: 'cat-work', name: '업무', colorHex: '#5B84B1', isDefault: true },
-  { id: 'cat-holiday', name: '공휴일', colorHex: '#D27D60', isDefault: true },
-  { id: 'cat-health', name: '건강/루틴', colorHex: '#7A9A8B', isDefault: true },
-  { id: 'cat-custom', name: '프로젝트', colorHex: '#DDB165', isDefault: false },
+  { id: 'cat-personal', name: '개인', colorHex: '#D9777F', emoji: '👤', isDefault: true },
+  { id: 'cat-work', name: '업무', colorHex: '#5B84B1', emoji: '💼', isDefault: true },
+  { id: 'cat-holiday', name: '공휴일', colorHex: '#D27D60', emoji: '🏖️', isDefault: true },
+  { id: 'cat-health', name: '건강/루틴', colorHex: '#7A9A8B', emoji: '🏃', isDefault: true },
+  { id: 'cat-custom', name: '프로젝트', colorHex: '#DDB165', emoji: '💡', isDefault: false },
 ];
 
 const today = new Date();

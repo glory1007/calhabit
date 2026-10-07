@@ -6,7 +6,6 @@ import { MonthCalendar } from './components/calendar/MonthCalendar';
 import { WeeklyTimetable } from './components/weekly/WeeklyTimetable';
 import { HabitDashboard } from './components/habits/HabitDashboard';
 import { WidgetGallery } from './components/widgets/WidgetGallery';
-import { TaskDrawer } from './components/drawer/TaskDrawer';
 import { EventModal } from './components/modals/EventModal';
 import { HabitModal } from './components/modals/HabitModal';
 import { HabitDetailModal } from './components/modals/HabitDetailModal';
@@ -68,10 +67,6 @@ const MainContent: React.FC = () => {
         setIsThemeModalOpen(false);
         return true;
       }
-      if (isTaskDrawerOpen) {
-        toggleTaskDrawer();
-        return true;
-      }
       if (isTimelineOpen) {
         setIsTimelineOpen(false);
         return true;
@@ -88,11 +83,9 @@ const MainContent: React.FC = () => {
     activeHabitDetailId,
     isSettingsOpen,
     isThemeModalOpen,
-    isTaskDrawerOpen,
     closeEventModal,
     closeHabitModal,
-    closeHabitDetail,
-    toggleTaskDrawer
+    closeHabitDetail
   ]);
 
   // 2. 안드로이드 상태표시줄(Status Bar) 테마 동기화
@@ -132,10 +125,7 @@ const MainContent: React.FC = () => {
         )}
       </main>
 
-      {/* 3. 미배정 할일 우측 서랍 */}
-      <TaskDrawer />
-
-      {/* 4. 모달 레이어 */}
+      {/* 모달 레이어 */}
       <EventModal />
       <HabitModal />
       <HabitDetailModal />

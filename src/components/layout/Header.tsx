@@ -165,14 +165,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
         {/* 우측: 도구 버튼들 (모바일 뷰포트에서도 여유롭게 수평 배치) */}
         <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
           <button
-            onClick={toggleTaskDrawer}
-            title="미배정 일정 & 할일 서랍"
-            className="p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
-          >
-            <CheckSquare size={17} />
-          </button>
-
-          <button
             onClick={toggleDarkMode}
             title="테마 변경"
             className="p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
