@@ -77,47 +77,38 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 shadow-xs select-none">
-      {/* 1행: 로고, 월 피커, 뷰 모드 탭, 액션 버튼 (Full-width 전폭 확장) */}
-      <div className="w-full px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
-        {/* 좌측: 로고 & 월 드롭다운 */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-8 h-8 rounded-xl bg-[#5B84B1] flex items-center justify-center text-white font-bold text-sm shadow-xs">
-              A
-            </div>
-            <span className="font-bold text-base tracking-tight hidden sm:inline text-slate-800 dark:text-zinc-100">
-              Across
-            </span>
-          </div>
-
+      {/* 1행: 월 피커, 뷰 모드 탭, 액션 버튼 (Full-width 전폭 확장) */}
+      <div className="w-full px-2.5 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3">
+        {/* 좌측: 월 네비게이션 & 오늘 버튼 (무조건 가로 1열 단일 행 정렬, 줄바꿈 완전 차단) */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
           {/* 월 피커 컨트롤러 */}
-          <div className="flex items-center bg-slate-100 dark:bg-zinc-800 rounded-lg p-0.5 ml-1">
+          <div className="flex items-center bg-slate-100/90 dark:bg-zinc-800/90 rounded-lg p-0.5 shrink-0 whitespace-nowrap">
             <button
               onClick={handlePrevMonth}
               aria-label="이전 달"
-              className="p-1 hover:bg-white dark:hover:bg-zinc-700 rounded-md transition-colors text-slate-600 dark:text-zinc-300"
+              className="p-1 hover:bg-white dark:hover:bg-zinc-700 rounded-md transition-colors text-slate-600 dark:text-zinc-300 active:scale-95 shrink-0"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={16} />
             </button>
             <button
               onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
-              className="px-2.5 py-1 text-sm font-semibold text-slate-800 dark:text-zinc-100 hover:text-slate-600 transition-colors flex items-center gap-1"
+              className="px-2 py-0.5 text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100 hover:text-slate-600 dark:hover:text-zinc-300 transition-colors flex items-center gap-1 tracking-tight shrink-0 whitespace-nowrap select-none"
             >
               <span>{format(currentMonth, 'yyyy년 M월', { locale: ko })}</span>
             </button>
             <button
               onClick={handleNextMonth}
               aria-label="다음 달"
-              className="p-1 hover:bg-white dark:hover:bg-zinc-700 rounded-md transition-colors text-slate-600 dark:text-zinc-300"
+              className="p-1 hover:bg-white dark:hover:bg-zinc-700 rounded-md transition-colors text-slate-600 dark:text-zinc-300 active:scale-95 shrink-0"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
           </div>
 
           {/* 오늘 바로가기 버튼 */}
           <button
             onClick={handleTodayClick}
-            className="px-2.5 py-1 text-xs font-semibold rounded-md border border-slate-300 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 transition-colors shadow-2xs"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-300/80 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 transition-colors shadow-2xs shrink-0 whitespace-nowrap active:scale-95"
           >
             오늘
           </button>
@@ -171,39 +162,40 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
           </button>
         </div>
 
-        {/* 우측: 도구 버튼들 */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* 우측: 도구 버튼들 (모바일 뷰포트에서도 여유롭게 수평 배치) */}
+        <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
           <button
             onClick={toggleTaskDrawer}
-            title="할일 서랍"
-            className="p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+            title="미배정 일정 & 할일 서랍"
+            className="p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
           >
-            <CheckSquare size={18} />
+            <CheckSquare size={17} />
           </button>
 
           <button
             onClick={toggleDarkMode}
             title="테마 변경"
-            className="p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
           >
-            <Sun size={18} className="hidden dark:block text-slate-300" />
-            <Moon size={18} className="block dark:hidden text-slate-600" />
+            <Sun size={17} className="hidden dark:block text-slate-300" />
+            <Moon size={17} className="block dark:hidden text-slate-600" />
           </button>
 
           <button
             onClick={onOpenSettings}
             title="설정"
-            className="p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
           >
-            <SlidersHorizontal size={18} />
+            <SlidersHorizontal size={17} />
           </button>
 
-          {/* 추가 버튼 (소프트 다크 슬레이트) */}
+          {/* 추가 버튼 (모바일: 콤팩트 정사각형 아이콘, 데스크톱: + 일정 추가) */}
           <button
             onClick={handleQuickAdd}
-            className="flex items-center gap-1 px-3 py-1.5 bg-[#4B6B88] hover:bg-[#3D566E] text-white rounded-lg text-xs font-semibold shadow-2xs transition-transform active:scale-95"
+            className="flex items-center justify-center gap-1 p-1.5 sm:px-3 sm:py-1.5 bg-[#4B6B88] hover:bg-[#3D566E] text-white rounded-lg text-xs font-semibold shadow-2xs transition-transform active:scale-95 shrink-0 ml-0.5"
+            title="일정 추가"
           >
-            <Plus size={15} />
+            <Plus size={16} />
             <span className="hidden sm:inline">일정 추가</span>
           </button>
         </div>

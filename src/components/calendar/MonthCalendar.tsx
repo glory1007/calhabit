@@ -153,9 +153,9 @@ export const MonthCalendar: React.FC = () => {
     // [요구사항 1: 유동적 높이 확장] 등록된 일정 개수에 맞춰 주(Week) 행 높이를 자연스럽게 동적 확장
     const maxRow = packedSegments.reduce((max, s) => Math.max(max, s.row), -1);
     const totalRowCount = maxRow + 1;
-    // 기본 셀 높이 115px (sm: 130px). 상단 날짜 영역(36px) + 행당 28px(24px+4px gap) + 하단 여백(8px)
-    const neededHeight = 36 + totalRowCount * 28 + 8;
-    const dynamicWeekHeight = Math.max(120, neededHeight);
+    // 상단 날짜 영역(28px) + 행당 22px(20px 높이 + 2px 간격) + 하단 여백(6px)
+    const neededHeight = 28 + totalRowCount * 22 + 6;
+    const dynamicWeekHeight = Math.max(110, neededHeight);
 
     // 모든 일정이 생략이나 잘림 없이 100% 보이도록 전체 노출
     const visibleSegments = packedSegments;
@@ -273,19 +273,19 @@ export const MonthCalendar: React.FC = () => {
           }`}
         >
           {/* 요일 헤더 */}
-          <div className="grid grid-cols-7 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/80 dark:bg-zinc-900/80 text-center shrink-0 sticky top-0 z-10 backdrop-blur-xs">
+          <div className="grid grid-cols-7 border-b border-gray-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 text-center shrink-0 sticky top-0 z-10 backdrop-blur-xs">
             {weekDayLabels.map((dayLabel, idx) => {
               const isSunday = (settings.startDayOfWeek === 0 && idx === 0) || (settings.startDayOfWeek === 1 && idx === 6);
               const isSaturday = (settings.startDayOfWeek === 0 && idx === 6) || (settings.startDayOfWeek === 1 && idx === 5);
               return (
                 <div
                   key={dayLabel}
-                  className={`py-2 text-xs sm:text-sm font-bold ${
+                  className={`py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wider ${
                     isSunday
-                      ? 'text-red-500'
+                      ? 'text-red-500/90 dark:text-red-400'
                       : isSaturday
-                      ? 'text-blue-500'
-                      : 'text-gray-700 dark:text-zinc-300'
+                      ? 'text-blue-500/90 dark:text-blue-400'
+                      : 'text-gray-500 dark:text-zinc-400'
                   }`}
                 >
                   {dayLabel}
@@ -345,24 +345,26 @@ export const MonthCalendar: React.FC = () => {
                             }`}
                           >
                             {/* 상단 양력 + 음력 + 날씨 */}
-                            <div className="flex items-start justify-between w-full mb-1 shrink-0">
-                              <div className="flex items-center gap-1.5">
+                            <div className="flex items-center justify-between w-full mb-0.5 shrink-0 px-0.5">
+                              <div className="flex items-baseline gap-1 min-w-0">
                                 <span
-                                  className={`text-xs sm:text-sm font-bold w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-transform ${
+                                  className={`text-xs sm:text-[13px] font-semibold w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform tabular-nums shrink-0 ${
                                     isCurrentDay
-                                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-sm font-black'
+                                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs font-bold'
+                                      : !isCurMonth
+                                      ? 'text-gray-300 dark:text-zinc-600 font-normal'
                                       : isSun
                                       ? 'text-red-500'
                                       : isSat
                                       ? 'text-blue-500'
-                                      : 'text-gray-900 dark:text-zinc-100'
+                                      : 'text-zinc-800 dark:text-zinc-100'
                                   }`}
                                 >
                                   {format(day, 'd')}
                                 </span>
 
                                 {settings.showLunarDates && isCurMonth && (
-                                  <span className="text-[10px] sm:text-xs text-gray-400 dark:text-zinc-500 font-normal">
+                                  <span className="text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 font-normal tabular-nums leading-none truncate">
                                     {lunarText}
                                   </span>
                                 )}
@@ -370,11 +372,11 @@ export const MonthCalendar: React.FC = () => {
 
                               {settings.showWeather && isCurMonth && (
                                 <div
-                                  className="text-[10px] sm:text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1"
+                                  className="text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 flex items-center gap-0.5 shrink-0"
                                   title={`${weather.summary} ${weather.tempHigh}°/${weather.tempLow}°`}
                                 >
-                                  <span className="text-xs sm:text-sm leading-none">{weather.icon}</span>
-                                  <span className="hidden sm:inline font-medium">{weather.tempHigh}°</span>
+                                  <span className="text-[10px] sm:text-xs leading-none">{weather.icon}</span>
+                                  <span className="hidden sm:inline font-normal">{weather.tempHigh}°</span>
                                 </div>
                               )}
                             </div>
@@ -385,7 +387,7 @@ export const MonthCalendar: React.FC = () => {
 
                     {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (다일 일정은 날짜 사이 끊김 없이 완전히 이어진 단일 바로 렌더링!) */}
                     <div
-                      className="absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[22px] sm:auto-rows-[24px] gap-y-1 w-full pt-8 sm:pt-9 pb-1.5 pointer-events-none z-10 transition-all"
+                      className="absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[20px] sm:auto-rows-[22px] gap-y-0.5 sm:gap-y-1 w-full pt-7 sm:pt-7.5 pb-1 pointer-events-none z-10 transition-all"
                       style={{ minHeight: `${dynamicWeekHeight}px` }}
                     >
                       {visibleSegments.map(item => {
@@ -399,10 +401,10 @@ export const MonthCalendar: React.FC = () => {
                           gridRow: item.row + 1,
                         };
 
-                        let containerClasses = `h-[22px] sm:h-[24px] text-[11px] sm:text-xs font-semibold shadow-2xs truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center gap-1 px-2 pointer-events-auto z-10 ${
-                          item.isFirstWeekOfEvent ? 'rounded-l-md ml-1' : 'rounded-l-none ml-0'
+                        let containerClasses = `h-[19px] sm:h-[21px] text-[10px] sm:text-[11px] font-medium tracking-tight shadow-2xs truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 pointer-events-auto z-10 ${
+                          item.isFirstWeekOfEvent ? 'rounded-l-xs sm:rounded-l-sm ml-0.5 sm:ml-1' : 'rounded-l-none ml-0'
                         } ${
-                          item.isLastWeekOfEvent ? 'rounded-r-md mr-1' : 'rounded-r-none mr-0'
+                          item.isLastWeekOfEvent ? 'rounded-r-xs sm:rounded-r-sm mr-0.5 sm:mr-1' : 'rounded-r-none mr-0'
                         }`;
 
                         if (!isTask) {
@@ -435,25 +437,25 @@ export const MonthCalendar: React.FC = () => {
                                   e.stopPropagation();
                                   toggleEventTaskCompleted(item.event.id);
                                 }}
-                                className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border transition-colors ${
+                                className={`w-3 h-3 rounded flex items-center justify-center shrink-0 border transition-colors ${
                                   item.event.isCompleted
                                     ? 'bg-emerald-500 text-white border-emerald-500'
                                     : 'border-current hover:bg-black/10'
                                 }`}
                               >
-                                {item.event.isCompleted && <Check size={10} strokeWidth={3} />}
+                                {item.event.isCompleted && <Check size={8} strokeWidth={3} />}
                               </button>
                             )}
 
-                            {/* 시작 시간 라벨 */}
+                            {/* 시작 시간 라벨 (TimeTree 스타일 콤팩트 라벨) */}
                             {timeStr && (
-                              <span className="opacity-90 text-[10px] font-mono shrink-0 font-medium">
+                              <span className="opacity-80 text-[8.5px] sm:text-[9.5px] font-mono shrink-0 font-medium leading-none mr-0.5">
                                 {timeStr}
                               </span>
                             )}
 
-                            {/* 일정 제목 (전체 바에 한 번만 렌더링!) */}
-                            <span className={`truncate ${item.event.isCompleted ? 'line-through opacity-70' : ''}`}>
+                            {/* 일정 제목 */}
+                            <span className={`truncate leading-none ${item.event.isCompleted ? 'line-through opacity-70' : ''}`}>
                               {item.event.title}
                             </span>
                           </div>
