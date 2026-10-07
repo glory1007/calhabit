@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CategoryReorderBar } from '../layout/CategoryReorderBar';
 import { AcrossInlineTimeline } from '../timeline/AcrossInlineTimeline';
 import { AcrossTimeline } from '../timeline/AcrossTimeline';
 import { QuickContextMenu } from '../modals/QuickContextMenu';
 import { formatLunarShort } from '../../utils/lunar';
-import { getWeatherForDate } from '../../utils/weather';
 import { triggerHapticFeedback } from '../../utils/habitStats';
 import { ScheduleEvent } from '../../types';
 import {
@@ -25,7 +24,8 @@ import {
   isBefore,
   isAfter,
 } from 'date-fns';
-import { Columns, Eye, Check, Clock } from 'lucide-react';
+import { ko } from 'date-fns/locale';
+import { Columns, Eye, Check, Clock, X } from 'lucide-react';
 import { getContrastTextColor } from '../../utils/contrastColor';
 
 export const MonthCalendar: React.FC = () => {
@@ -43,6 +43,33 @@ export const MonthCalendar: React.FC = () => {
   } = useApp();
 
   const [desktopLayout, setDesktopLayout] = useState<'inline' | 'split'>('inline');
+
+  // 모바일 화면 감지
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // 모바일 날짜별 전체 일정 상세 팝업 상태
+  const [dayDetailModal, setDayDetailModal] = useState<{
+    date: Date;
+    events: ScheduleEvent[];
+  } | null>(null);
+
+  // 특정 날짜의 전체 일정 조회 헬퍼
+  const getEventsForDay = (day: Date) => {
+    const dayStr = format(day, 'yyyy-MM-dd');
+    const dayStartStr = `${dayStr}T00:00:00`;
+    const dayEndStr = `${dayStr}T23:59:59`;
+    return filteredEvents.filter(
+      evt => evt.startDateTime <= dayEndStr && evt.endDateTime >= dayStartStr
+    );
+  };
 
   // 퀵 컨텍스트 메뉴 상태
   const [contextEvent, setContextEvent] = useState<ScheduleEvent | null>(null);
@@ -152,16 +179,38 @@ export const MonthCalendar: React.FC = () => {
       });
     }
 
-    // [요구사항 1: 유동적 높이 확장] 등록된 일정 개수에 맞춰 주(Week) 행 높이를 자연스럽게 동적 확장
-    const maxRow = packedSegments.reduce((max, s) => Math.max(max, s.row), -1);
-    const totalRowCount = maxRow + 1;
-    // 상단 날짜 영역(28px) + 행당 22px(20px 높이 + 2px 간격) + 하단 여백(6px)
-    const neededHeight = 28 + totalRowCount * 22 + 6;
-    const dynamicWeekHeight = Math.max(110, neededHeight);
-
-    // 모든 일정이 생략이나 잘림 없이 100% 보이도록 전체 노출
-    const visibleSegments = packedSegments;
+    // [요구사항 2: 반응형 분기 처리]
+    // PC/노트북: 일정이 5개 이상이어도 행 높이가 동적으로 넉넉히 늘어나 100% 보이도록 처리 (neededHeight = 34 + totalRowCount * 26 + 12px)
+    // 모바일: 세로 공간 확보를 위해 각 날짜 셀 최대 3개만 표시 (row < 3), 4개 이상은 +N개 뱃지로 표시
+    let visibleSegments: WeekEventSegment[];
     const hiddenCounts = Array(7).fill(0);
+    let dynamicWeekHeight: number;
+
+    if (isMobile) {
+      // 모바일: 0, 1, 2행 (최대 3개) 노출
+      visibleSegments = packedSegments.filter(s => s.row < 3);
+
+      for (const item of packedSegments) {
+        if (item.row >= 3) {
+          for (let c = item.startCol; c <= item.endCol; c++) {
+            hiddenCounts[c]++;
+          }
+        }
+      }
+
+      const hasHidden = hiddenCounts.some(c => c > 0);
+      const maxVisibleRow = visibleSegments.reduce((max, s) => Math.max(max, s.row), -1);
+      const displayRows = hasHidden ? 4 : Math.max(2, maxVisibleRow + 1);
+      dynamicWeekHeight = Math.max(100, 30 + displayRows * 22 + 6);
+    } else {
+      // PC/대화면: 모든 일정 100% 노출 & 넉넉한 세로 높이 보장
+      visibleSegments = packedSegments;
+      const maxRow = packedSegments.reduce((max, s) => Math.max(max, s.row), -1);
+      const totalRowCount = maxRow + 1;
+      // 상단 헤더 영역(34px) + 각 행 26px (22px 높이 + 4px 간격) + 하단 여백(12px)
+      const neededHeight = 34 + totalRowCount * 26 + 12;
+      dynamicWeekHeight = Math.max(120, neededHeight);
+    }
 
     return { visibleSegments, hiddenCounts, dynamicWeekHeight };
   };
@@ -321,7 +370,6 @@ export const MonthCalendar: React.FC = () => {
                         const isCurrentDay = isToday(day);
                         const isSelected = isSameDay(day, selectedDate);
                         const isDragTarget = dragOverDate === dayStr;
-                        const weather = getWeatherForDate(day);
                         const lunarText = formatLunarShort(day);
                         const isSun = day.getDay() === 0;
                         const isSat = day.getDay() === 6;
@@ -353,7 +401,7 @@ export const MonthCalendar: React.FC = () => {
                                 : ''
                             }`}
                           >
-                            {/* 상단 양력 + 음력 + 날씨 (가운데 정렬) */}
+                            {/* 상단 양력 + 음력 (가운데 정렬) */}
                             <div className="relative flex items-center justify-center w-full mb-0.5 shrink-0 px-0.5 min-h-[24px]">
                               {/* 타임라인 시계 버튼 (선택된 셀 좌측에 배치) */}
                               {isSelected && (
@@ -398,17 +446,6 @@ export const MonthCalendar: React.FC = () => {
                                   </span>
                                 )}
                               </div>
-
-                              {/* 날씨 (우측에 배치) */}
-                              {settings.showWeather && isCurMonth && (
-                                <div
-                                  className="absolute right-0.5 text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 flex items-center gap-0.5 shrink-0"
-                                  title={`${weather.summary} ${weather.tempHigh}°/${weather.tempLow}°`}
-                                >
-                                  <span className="text-[10px] sm:text-xs leading-none">{weather.icon}</span>
-                                  <span className="hidden sm:inline font-normal">{weather.tempHigh}°</span>
-                                </div>
-                              )}
                             </div>
                           </div>
                         );
@@ -483,21 +520,31 @@ export const MonthCalendar: React.FC = () => {
                         );
                       })}
 
-                      {/* 4행 이상 숨겨진 일정 표시 (+N개) */}
+                      {/* 모바일 4행 이상 숨겨진 일정 표시 (+N개 뱃지 및 터치 시 팝업) */}
                       {hiddenCounts.map((count, colIdx) => {
                         if (count <= 0) return null;
+                        const day = week[colIdx];
                         return (
-                          <div
+                          <button
+                            type="button"
                             key={`hidden-${colIdx}`}
-                            onClick={() => setSelectedDate(week[colIdx])}
-                            className="pointer-events-auto text-[10px] font-bold text-gray-500 hover:text-slate-900 dark:hover:text-zinc-100 pl-2 cursor-pointer flex items-center"
+                            onClick={e => {
+                              e.stopPropagation();
+                              setSelectedDate(day);
+                              setDayDetailModal({
+                                date: day,
+                                events: getEventsForDay(day),
+                              });
+                            }}
+                            className="pointer-events-auto h-[18px] sm:h-[20px] text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded mx-0.5 px-1 cursor-pointer flex items-center justify-center shadow-2xs transition-all active:scale-95"
                             style={{
                               gridColumn: `${colIdx + 1} / span 1`,
-                              gridRow: 5,
+                              gridRow: 4,
                             }}
+                            title={`${format(day, 'M월 d일')} 전체 일정 (+${count}개)`}
                           >
-                            +{count}개 더보기
-                          </div>
+                            +{count}개
+                          </button>
                         );
                       })}
                     </div>
@@ -534,6 +581,135 @@ export const MonthCalendar: React.FC = () => {
           setContextPos(null);
         }}
       />
+
+      {/* [기능 3] 모바일: 하루 전체 일정 상세 팝업 (+N개 뱃지 탭 시 표시) */}
+      {dayDetailModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4"
+          onClick={() => setDayDetailModal(null)}
+        >
+          <div
+            className="w-full sm:max-w-md bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-4 sm:p-5 flex flex-col max-h-[85vh] animate-in fade-in slide-in-from-bottom duration-200"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* 팝업 헤더 */}
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-zinc-800 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-slate-800 dark:text-zinc-100 text-sm">
+                  {format(dayDetailModal.date, 'd')}
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-zinc-100">
+                    {format(dayDetailModal.date, 'M월 d일 (EEEE)', { locale: ko })}
+                  </h3>
+                  <p className="text-[11px] text-gray-500 dark:text-zinc-400">
+                    등록된 일정 총 {dayDetailModal.events.length}개
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDayDetailModal(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* 일정 목록 */}
+            <div className="flex-1 overflow-y-auto py-3 space-y-2">
+              {dayDetailModal.events.length === 0 ? (
+                <div className="text-center py-8 text-xs text-gray-400">등록된 일정이 없습니다.</div>
+              ) : (
+                dayDetailModal.events.map(evt => {
+                  const isTask = evt.isTask;
+                  const isAllDay = evt.isAllDay;
+                  const startTime = !isAllDay ? evt.startDateTime.substring(11, 16) : '종일';
+                  const endTime = !isAllDay ? evt.endDateTime.substring(11, 16) : '';
+
+                  return (
+                    <div
+                      key={evt.id}
+                      onClick={e => {
+                        handleEventClick(e, evt);
+                      }}
+                      className="p-2.5 rounded-xl border border-gray-100 dark:border-zinc-800/80 bg-gray-50/70 dark:bg-zinc-850/50 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all flex items-center justify-between gap-3 cursor-pointer group active:scale-[0.99]"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div
+                          className="w-2.5 h-8 rounded-full shrink-0"
+                          style={{ backgroundColor: evt.colorHex }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className={`text-xs font-semibold truncate ${
+                                evt.isCompleted
+                                  ? 'line-through text-gray-400 dark:text-zinc-500'
+                                  : 'text-gray-900 dark:text-zinc-100'
+                              }`}
+                            >
+                              {evt.title}
+                            </span>
+                            {isTask && (
+                              <span className="text-[10px] px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-medium shrink-0">
+                                할일
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                            {isAllDay ? '종일' : `${startTime} ~ ${endTime}`}
+                          </div>
+                        </div>
+                      </div>
+
+                      {isTask && (
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            toggleEventTaskCompleted(evt.id);
+                            setDayDetailModal(prev =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    events: prev.events.map(item =>
+                                      item.id === evt.id
+                                        ? { ...item, isCompleted: !item.isCompleted }
+                                        : item
+                                    ),
+                                  }
+                                : null
+                            );
+                          }}
+                          className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all shrink-0 ${
+                            evt.isCompleted
+                              ? 'bg-emerald-500 text-white border-emerald-500'
+                              : 'border-gray-300 dark:border-zinc-600 hover:border-emerald-500'
+                          }`}
+                        >
+                          {evt.isCompleted && <Check size={12} strokeWidth={3} />}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* 하단 닫기 버튼 */}
+            <div className="pt-2 border-t border-gray-100 dark:border-zinc-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setDayDetailModal(null)}
+                className="w-full py-2.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-semibold rounded-xl transition-colors"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

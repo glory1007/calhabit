@@ -162,8 +162,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
           </button>
         </div>
 
-        {/* 우측: 도구 버튼들 (모바일 뷰포트에서도 여유롭게 수평 배치) */}
-        <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
+        {/* 우측: 도구 버튼들 (데스크톱 전용, 모바일에서는 좌측 하단에 배치됨) */}
+        <div className="hidden sm:flex items-center gap-1 sm:gap-1.5 shrink-0">
           <button
             onClick={toggleDarkMode}
             title="테마 변경"

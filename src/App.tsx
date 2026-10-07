@@ -33,12 +33,34 @@ const MainContent: React.FC = () => {
     activeHabitDetailId,
     closeHabitDetail,
     isTaskDrawerOpen,
-    toggleTaskDrawer
+    toggleTaskDrawer,
+    openEventModal,
+    openHabitModal,
+    updateSettings
   } = useApp();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const { isTagModalOpen, setIsTagModalOpen, isTimelineOpen, setIsTimelineOpen } = useApp();
+
+  const handleQuickAdd = () => {
+    if (viewMode === 'habit') {
+      openHabitModal();
+    } else {
+      openEventModal();
+    }
+  };
+
+  const toggleDarkMode = () => {
+    const isDark = document.documentElement.classList.contains('dark') || settings.theme === 'dark';
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      updateSettings({ theme: 'light' });
+    } else {
+      document.documentElement.classList.add('dark');
+      updateSettings({ theme: 'dark' });
+    }
+  };
 
   // 1. 안드로이드 하드웨어 뒤로가기 버튼(Hardware Back Button) 처리
   useEffect(() => {
@@ -137,7 +159,12 @@ const MainContent: React.FC = () => {
       <TagManagementModal />
 
       {/* 5. Across 멀티 뷰 스위처 도크 (Dock) & 고정 FAB */}
-      <BottomNav onOpenThemeModal={() => setIsThemeModalOpen(true)} />
+      <BottomNav
+        onOpenThemeModal={() => setIsThemeModalOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onQuickAdd={handleQuickAdd}
+        toggleDarkMode={toggleDarkMode}
+      />
     </div>
   );
 };
