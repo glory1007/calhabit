@@ -25,7 +25,7 @@ import {
   isBefore,
   isAfter,
 } from 'date-fns';
-import { Columns, Eye, Move, Check } from 'lucide-react';
+import { Columns, Eye, Check, Clock } from 'lucide-react';
 import { getContrastTextColor } from '../../utils/contrastColor';
 
 export const MonthCalendar: React.FC = () => {
@@ -37,6 +37,8 @@ export const MonthCalendar: React.FC = () => {
     saveEvent,
     toggleEventTaskCompleted,
     assignTodoToSchedule,
+    isTimelineOpen,
+    setIsTimelineOpen,
     settings,
   } = useApp();
 
@@ -227,42 +229,49 @@ export const MonthCalendar: React.FC = () => {
           <CategoryReorderBar collapsible={false} />
         </div>
 
-        {/* 대화면 뷰 레이아웃 전환 버튼 */}
-        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1 shrink-0 border-l border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-850/50">
+        {/* 대화면 뷰 레이아웃 전환 & 타임라인 수동 토글 버튼 */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 shrink-0 border-l border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-850/50">
           <button
-            onClick={() => setDesktopLayout('inline')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-              desktopLayout === 'inline'
-                ? 'bg-white dark:bg-zinc-700 text-slate-800 dark:text-zinc-100 shadow-2xs border border-slate-200 dark:border-zinc-600'
-                : 'text-slate-500 hover:text-slate-800'
+            onClick={() => setIsTimelineOpen(!isTimelineOpen)}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors border shadow-2xs ${
+              isTimelineOpen
+                ? 'bg-[#4B6B88] text-white border-transparent'
+                : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 border-slate-200 dark:border-zinc-700 hover:bg-slate-100'
             }`}
-            title="Across 인라인 행 확장 뷰"
+            title={isTimelineOpen ? '24시간 타임라인 접기' : '24시간 타임라인 펼치기'}
           >
-            <Eye size={13} />
-            <span>인라인 확장</span>
+            <Clock size={13} />
+            <span className="hidden sm:inline">타임라인</span>
+            <span className="text-[10px] font-bold opacity-80">{isTimelineOpen ? 'ON' : 'OFF'}</span>
           </button>
-          <button
-            onClick={() => setDesktopLayout('split')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-              desktopLayout === 'split'
-                ? 'bg-white dark:bg-zinc-700 text-slate-800 dark:text-zinc-100 shadow-2xs border border-slate-200 dark:border-zinc-600'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-            title="좌우 분할 Split 뷰"
-          >
-            <Columns size={13} />
-            <span>좌우 분할</span>
-          </button>
-        </div>
-      </div>
 
-      {/* 안내 배너 (Across 미니멀 스타일) */}
-      <div className="hidden sm:flex items-center justify-between px-4 py-1.5 bg-slate-50/70 dark:bg-zinc-900 border-b border-slate-200/70 dark:border-zinc-800 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
-        <span className="flex items-center gap-1.5">
-          <Move size={12} className="text-slate-500 dark:text-slate-400" />
-          <span><strong className="font-bold text-slate-800 dark:text-slate-100">드래그 & 드롭:</strong> 일정을 다른 날짜로 끌어다 놓아 이동하거나, 일정을 탭하여 퀵 메뉴를 사용하세요.</span>
-        </span>
-        <span className="text-slate-400 dark:text-slate-400 text-[10px]">월간 캘린더</span>
+          <div className="hidden xl:flex items-center gap-1">
+            <button
+              onClick={() => setDesktopLayout('inline')}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                desktopLayout === 'inline'
+                  ? 'bg-white dark:bg-zinc-700 text-slate-800 dark:text-zinc-100 shadow-2xs border border-slate-200 dark:border-zinc-600'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Across 인라인 행 확장 뷰"
+            >
+              <Eye size={13} />
+              <span>인라인</span>
+            </button>
+            <button
+              onClick={() => setDesktopLayout('split')}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                desktopLayout === 'split'
+                  ? 'bg-white dark:bg-zinc-700 text-slate-800 dark:text-zinc-100 shadow-2xs border border-slate-200 dark:border-zinc-600'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="좌우 분할 Split 뷰"
+            >
+              <Columns size={13} />
+              <span>분할</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* 2. 대화면 전폭 캘린더 메인 컨테이너 (Full-Viewport) */}
@@ -370,15 +379,35 @@ export const MonthCalendar: React.FC = () => {
                                 )}
                               </div>
 
-                              {settings.showWeather && isCurMonth && (
-                                <div
-                                  className="text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 flex items-center gap-0.5 shrink-0"
-                                  title={`${weather.summary} ${weather.tempHigh}°/${weather.tempLow}°`}
-                                >
-                                  <span className="text-[10px] sm:text-xs leading-none">{weather.icon}</span>
-                                  <span className="hidden sm:inline font-normal">{weather.tempHigh}°</span>
-                                </div>
-                              )}
+                              <div className="flex items-center gap-1 shrink-0">
+                                {isSelected && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setIsTimelineOpen(!isTimelineOpen);
+                                    }}
+                                    className={`p-0.5 rounded transition-colors ${
+                                      isTimelineOpen
+                                        ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300'
+                                        : 'text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200'
+                                    }`}
+                                    title={isTimelineOpen ? '24시간 타임라인 닫기' : '24시간 타임라인 열기'}
+                                  >
+                                    <Clock size={11} />
+                                  </button>
+                                )}
+
+                                {settings.showWeather && isCurMonth && (
+                                  <div
+                                    className="text-[9px] sm:text-[10px] text-gray-400 dark:text-zinc-500 flex items-center gap-0.5 shrink-0"
+                                    title={`${weather.summary} ${weather.tempHigh}°/${weather.tempLow}°`}
+                                  >
+                                    <span className="text-[10px] sm:text-xs leading-none">{weather.icon}</span>
+                                    <span className="hidden sm:inline font-normal">{weather.tempHigh}°</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
@@ -483,11 +512,11 @@ export const MonthCalendar: React.FC = () => {
                   </div>
 
                   {/* [규칙 1-1 긴급 수정]: 선택된 주(Week) 바로 아래에 독립된 한 줄로 렌더링되어 다음 주 셀들이 자연스럽게 아래로 밀려남(Push Down) */}
-                  {desktopLayout === 'inline' && isSelectedInWeek && (
+                  {desktopLayout === 'inline' && isSelectedInWeek && isTimelineOpen && (
                     <div
                       className="w-full px-2 sm:px-4 py-2 bg-slate-50/90 dark:bg-zinc-900 border-t border-b border-slate-200 dark:border-zinc-700 z-20 shadow-inner shrink-0"
                     >
-                      <AcrossInlineTimeline date={selectedDate} />
+                      <AcrossInlineTimeline date={selectedDate} onClose={() => setIsTimelineOpen(false)} />
                     </div>
                   )}
                 </div>

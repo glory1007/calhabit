@@ -7,7 +7,7 @@ import { formatLunarShort } from '../../utils/lunar';
 import { getWeatherForDate } from '../../utils/weather';
 import { triggerHapticFeedback } from '../../utils/habitStats';
 import { QuickContextMenu } from '../modals/QuickContextMenu';
-import { Plus, Maximize2, Calendar as CalIcon, Trash2, Check } from 'lucide-react';
+import { Plus, Maximize2, Calendar as CalIcon, Trash2, Check, Clock, X } from 'lucide-react';
 import { getContrastTextColor } from '../../utils/contrastColor';
 
 interface AcrossInlineTimelineProps {
@@ -15,7 +15,7 @@ interface AcrossInlineTimelineProps {
   onClose?: () => void;
 }
 
-export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date }) => {
+export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date, onClose }) => {
   const {
     filteredEvents,
     openEventModal,
@@ -295,42 +295,25 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
       onTouchEnd={handleTouchEnd}
       className="my-2 p-3 bg-slate-50/80 dark:bg-zinc-850/90 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-xs transition-all relative select-none"
     >
-      {/* 헤더 */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/80 dark:border-zinc-700/80">
-        <div className="flex items-center gap-3">
-          <span className="font-bold text-sm text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-slate-500" />
-            <span>{format(date, 'M월 d일 EEEE', { locale: ko })}</span>
-          </span>
-
-          {settings.showLunarDates && (
-            <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal">
-              {lunarStr}
-            </span>
-          )}
-
-          {settings.showWeather && (
-            <span className="text-xs font-medium text-slate-600 dark:text-zinc-300 flex items-center gap-1.5 bg-white dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-slate-200/70 dark:border-zinc-700">
-              <span>{weather.tempHigh}° {weather.tempLow}°</span>
-              <span className="text-[11px] text-slate-400">({weather.summary})</span>
-            </span>
-          )}
+      {/* 슬림 헤더: 중복 날짜 타이틀 및 중복 버튼 제거, 닫기 버튼 배치 */}
+      <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-200/60 dark:border-zinc-750">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-zinc-200">
+          <Clock size={13} className="text-[#5B84B1]" />
+          <span>24시간 타임라인</span>
+          <span className="text-[11px] text-slate-400 font-normal">({timedSegments.length}개 일정)</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              const datePart = format(date, 'yyyy-MM-dd');
-              openEventModal(undefined, `${datePart}T14:00:00`);
-            }}
-            className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-slate-100 text-slate-700 dark:text-zinc-200 rounded-lg border border-slate-200 dark:border-zinc-700 transition-colors shadow-2xs"
-          >
-            <Plus size={13} />
-            <span>일정 추가</span>
-          </button>
-          <div className="text-slate-400 hover:text-slate-600 p-1" title="Across 24시간 타임라인">
-            <Maximize2 size={15} />
-          </div>
+        <div className="flex items-center gap-1">
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-200/60 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 text-xs font-semibold"
+              title="타임라인 접기"
+            >
+              <X size={15} />
+              <span className="text-[11px]">닫기</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -553,13 +536,7 @@ export const AcrossInlineTimeline: React.FC<AcrossInlineTimelineProps> = ({ date
         </div>
       )}
 
-      {/* 안내 캡션 (Across 미니멀 안내) */}
-      <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-300 pt-1.5 px-1 font-medium">
-        <span>
-          <span className="font-bold text-slate-700 dark:text-slate-100">드래그 & 드롭:</span> 일정을 길게 눌러 좌우로 드래그하여 시간을 변경하거나 우측 휴지통에 놓아 삭제할 수 있습니다.
-        </span>
-        <span className="text-slate-400 dark:text-slate-400">{timedSegments.length}개 시간제 일정</span>
-      </div>
+
 
       {/* [기능 2] 퀵 컨텍스트 메뉴 팝오버 */}
       <QuickContextMenu

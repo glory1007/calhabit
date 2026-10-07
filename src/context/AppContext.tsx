@@ -38,6 +38,11 @@ interface AppContextType {
   editingHabit: Habit | null;
   activeHabitDetailId: string | null;
   isTaskDrawerOpen: boolean;
+  isTimelineOpen: boolean;
+  setIsTimelineOpen: (open: boolean) => void;
+  toggleTimeline: () => void;
+  isTagModalOpen: boolean;
+  setIsTagModalOpen: (open: boolean) => void;
 
   // 상태 변경 함수
   setSelectedDate: (date: Date) => void;
@@ -46,6 +51,9 @@ interface AppContextType {
   toggleCategoryFilter: (categoryId: string) => void;
   resetCategoryFilter: () => void;
   reorderCategories: (sourceIndex: number, destIndex: number) => void;
+  addCategory: (name: string, colorHex: string) => void;
+  updateCategory: (id: string, name: string, colorHex: string) => void;
+  deleteCategory: (id: string) => void;
   updateSettings: (newSettings: Partial<AppSettings>) => void;
 
   // 이벤트 관련 액션
@@ -148,6 +156,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeHabitDetailId, setActiveHabitDetailId] = useState<string | null>(null);
 
   const [isTaskDrawerOpen, setIsTaskDrawerOpen] = useState(false);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
+  const toggleTimeline = () => setIsTimelineOpen(prev => !prev);
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
 
   // 로컬 스토리지 동기화
   useEffect(() => {
@@ -194,6 +205,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       next.splice(destIndex, 0, moved);
       return next;
     });
+  };
+
+  // 태그 신규 추가
+  const addCategory = (name: string, colorHex: string) => {
+    const newCat: CategoryFolder = {
+      id: `cat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      name: name.trim() || '새 태그',
+      colorHex,
+    };
+    setCategories(prev => [...prev, newCat]);
+    if (settings.hapticEnabled) triggerHapticFeedback();
+  };
+
+  // 태그 수정 (색상 변경 시 해당 태그의 모든 일정/할일 색상도 실시간 일괄 동기화!)
+  const updateCategory = (id: string, name: string, colorHex: string) => {
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, name: name.trim(), colorHex } : c));
+    setEvents(prev => prev.map(e => e.categoryFolderId === id ? { ...e, colorHex } : e));
+    setTodos(prev => prev.map(t => t.categoryFolderId === id ? { ...t, colorHex } : t));
+    if (settings.hapticEnabled) triggerHapticFeedback();
+  };
+
+  // 태그 삭제
+  const deleteCategory = (id: string) => {
+    setCategories(prev => prev.filter(c => c.id !== id));
+    setActiveCategoryIds(prev => prev.filter(catId => catId !== id));
+    if (settings.hapticEnabled) triggerHapticFeedback();
   };
 
   const updateSettings = (newSettings: Partial<AppSettings>) => {
@@ -469,12 +506,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         editingHabit,
         activeHabitDetailId,
         isTaskDrawerOpen,
+        isTimelineOpen,
+        setIsTimelineOpen,
+        toggleTimeline,
+        isTagModalOpen,
+        setIsTagModalOpen,
         setSelectedDate,
         setCurrentMonth,
         setViewMode,
         toggleCategoryFilter,
         resetCategoryFilter,
         reorderCategories,
+        addCategory,
+        updateCategory,
+        deleteCategory,
         updateSettings,
         openEventModal,
         closeEventModal,

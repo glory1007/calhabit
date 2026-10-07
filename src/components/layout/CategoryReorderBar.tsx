@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { triggerHapticFeedback } from '../../utils/habitStats';
-import { Check, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, GripVertical, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 interface CategoryReorderBarProps {
   collapsible?: boolean;
@@ -13,6 +13,7 @@ export const CategoryReorderBar: React.FC<CategoryReorderBarProps> = ({ collapsi
     activeCategoryIds,
     toggleCategoryFilter,
     reorderCategories,
+    setIsTagModalOpen,
     settings,
   } = useApp();
 
@@ -189,6 +190,17 @@ export const CategoryReorderBar: React.FC<CategoryReorderBarProps> = ({ collapsi
               </div>
             );
           })}
+
+          {/* 태그 추가 & 커스텀 관리 버튼 */}
+          <button
+            type="button"
+            onClick={() => setIsTagModalOpen(true)}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 transition-colors shrink-0 border border-slate-200 dark:border-zinc-700 shadow-2xs"
+            title="태그 추가 및 색상 관리"
+          >
+            <Plus size={13} />
+            <span>태그 관리</span>
+          </button>
         </div>
 
         {/* 접기/펼치기 버튼 (선택적) */}
@@ -201,12 +213,6 @@ export const CategoryReorderBar: React.FC<CategoryReorderBarProps> = ({ collapsi
             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
         )}
-      </div>
-
-      {/* 대화면 힌트 라벨 */}
-      <div className="hidden lg:flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-300 pt-1 px-1 font-medium">
-        <span>💡 칩을 길게 누르거나 드래그하여 순서를 재배치할 수 있습니다 (자동 저장).</span>
-        <span className="text-slate-400 dark:text-slate-400">{categories.length}개 카테고리 활성</span>
       </div>
     </div>
   );

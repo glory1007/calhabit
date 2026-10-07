@@ -12,6 +12,7 @@ import { HabitModal } from './components/modals/HabitModal';
 import { HabitDetailModal } from './components/modals/HabitDetailModal';
 import { SettingsModal } from './components/modals/SettingsModal';
 import { ThemePaletteModal } from './components/modals/ThemePaletteModal';
+import { TagManagementModal } from './components/modals/TagManagementModal';
 import { DDayView } from './components/dday/DDayView';
 import {
   isNativeApp,
@@ -38,10 +39,15 @@ const MainContent: React.FC = () => {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const { isTagModalOpen, setIsTagModalOpen, isTimelineOpen, setIsTimelineOpen } = useApp();
 
   // 1. 안드로이드 하드웨어 뒤로가기 버튼(Hardware Back Button) 처리
   useEffect(() => {
     const unregister = registerHardwareBackButton(() => {
+      if (isTagModalOpen) {
+        setIsTagModalOpen(false);
+        return true;
+      }
       if (isEventModalOpen) {
         closeEventModal();
         return true;
@@ -66,11 +72,17 @@ const MainContent: React.FC = () => {
         toggleTaskDrawer();
         return true;
       }
+      if (isTimelineOpen) {
+        setIsTimelineOpen(false);
+        return true;
+      }
       return false;
     });
 
     return unregister;
   }, [
+    isTagModalOpen,
+    isTimelineOpen,
     isEventModalOpen,
     isHabitModalOpen,
     activeHabitDetailId,
@@ -132,6 +144,7 @@ const MainContent: React.FC = () => {
         isOpen={isThemeModalOpen}
         onClose={() => setIsThemeModalOpen(false)}
       />
+      <TagManagementModal />
 
       {/* 5. Across 멀티 뷰 스위처 도크 (Dock) & 고정 FAB */}
       <BottomNav onOpenThemeModal={() => setIsThemeModalOpen(true)} />
