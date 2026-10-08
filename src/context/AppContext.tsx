@@ -23,8 +23,9 @@ import {
   saveSyncConfig,
   pushToCloud,
   pullFromCloud,
-  subscribeToSupabaseRealtime,
+  subscribeToRealtimeSync,
   SyncPayload,
+  DEFAULT_MASTER_SYNC_KEY,
 } from '../services/cloudSync';
 
 interface AppContextType {
@@ -205,13 +206,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (data.habits && Array.isArray(data.habits)) setHabits(data.habits);
     if (data.todos && Array.isArray(data.todos)) setTodos(data.todos);
     if (data.categories && Array.isArray(data.categories)) setCategories(data.categories);
-    if (data.settings) setSettings(prev => ({ ...prev, ...data.settings }));
+    if (data.settings) {
+      setSettings(prev => ({ ...prev, ...data.settings }));
+      if (data.settings.theme) {
+        document.documentElement.classList.toggle('dark', data.settings.theme === 'dark');
+      }
+    }
+    if (typeof data.isTimelineOpen === 'boolean') {
+      setIsTimelineOpen(data.isTimelineOpen);
+    }
     setLastSyncedAt(data.updatedAt || new Date().toISOString());
     setSyncStatus('synced');
     setSyncError(null);
     setTimeout(() => {
       isRemoteUpdatingRef.current = false;
-    }, 1000);
+    }, 800);
   };
 
   const handleUpdateSyncConfig = (config: CloudSyncSettings) => {
@@ -229,6 +238,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         todos,
         categories,
         settings,
+        isTimelineOpen,
       },
       syncConfig
     );
@@ -256,15 +266,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  // 1. 초기 로드 시 클라우드 데이터 가져오기 & Realtime 구독
+  // 1. 초기 로드 시 클라우드 데이터 가져오기 & Realtime 구독 (WebSockets 초고속 동기화)
   useEffect(() => {
-    if (!syncConfig.enabled || !syncConfig.syncKey) return;
+    if (!syncConfig.enabled) return;
 
     handleManualPull();
 
-    const unsubscribe = subscribeToSupabaseRealtime(syncConfig, payload => {
-      applyRemotePayload(payload);
-    });
+    const unsubscribe = subscribeToRealtimeSync(
+      syncConfig,
+      payload => {
+        applyRemotePayload(payload);
+      },
+      () => ({
+        events,
+        habits,
+        todos,
+        categories,
+        settings,
+        isTimelineOpen,
+        updatedAt: new Date().toISOString(),
+      })
+    );
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
@@ -277,21 +299,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       unsubscribe();
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [syncConfig.enabled, syncConfig.syncKey, syncConfig.provider, syncConfig.supabaseUrl, syncConfig.supabaseAnonKey, syncConfig.firebaseRtdbUrl]);
+  }, [syncConfig.enabled, syncConfig.syncKey, syncConfig.provider]);
 
-  // 2. 데이터 변경 시 자동 업로드 (Debounced Push)
+  // 2. 데이터 변경 시 자동 업로드 (Debounced Push: 300ms 초고속 반영)
   useEffect(() => {
-    if (!syncConfig.enabled || !syncConfig.syncKey || isRemoteUpdatingRef.current) return;
+    if (!syncConfig.enabled || isRemoteUpdatingRef.current) return;
 
     if (autoPushTimeoutRef.current) clearTimeout(autoPushTimeoutRef.current);
     autoPushTimeoutRef.current = setTimeout(() => {
       handleManualPush();
-    }, 800);
+    }, 300);
 
     return () => {
       if (autoPushTimeoutRef.current) clearTimeout(autoPushTimeoutRef.current);
     };
-  }, [events, habits, todos, categories, settings]);
+  }, [events, habits, todos, categories, settings, isTimelineOpen]);
+
+  // 3. 테마(다크/라이트) 즉시 html 태그 반영
+  useEffect(() => {
+    const isDark = settings.theme === 'dark';
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [settings.theme]);
 
   // 로컬 스토리지 동기화
   useEffect(() => {

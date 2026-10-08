@@ -173,7 +173,7 @@ export interface AppIconPreset {
 
 export interface CloudSyncConfig {
   enabled: boolean;
-  provider: 'supabase' | 'firebase';
+  provider: 'realtime_channel' | 'supabase' | 'firebase';
   syncKey: string;
   supabaseUrl?: string;
   supabaseAnonKey?: string;

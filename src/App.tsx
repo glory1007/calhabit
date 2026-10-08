@@ -118,9 +118,14 @@ const MainContent: React.FC = () => {
     closeHabitDetail
   ]);
 
-  // 2. 안드로이드 상태표시줄(Status Bar) 테마 동기화
+  // 2. 안드로이드 상태표시줄(Status Bar) 테마 동기화 및 다크모드 클래스 동기화
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark') || settings.theme === 'dark';
+    const isDark = settings.theme === 'dark';
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     syncNativeStatusBar(isDark);
   }, [settings.theme]);
 
