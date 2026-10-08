@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,11 +28,12 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '21'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build Web App & Sync to Capacitor Android
         run: npm run build:mobile
@@ -37,14 +41,47 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
+      - name: Build Android Debug APK
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK Artifact
+      - name: Prepare APK Asset
+        run: |
+          mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/CalHabit.apk
+
+      - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: CalHabit-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: CalHabit-apk
+          path: build-output/CalHabit.apk
           retention-days: 30
+
+      - name: Publish GitHub Release with APK
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-apk
+          name: "CalHabit Android App v1.0.0"
+          body: |
+            ## 📱 CalHabit 안드로이드 정식 앱 설치 파일 (APK)
+
+            스마트폰에서 아래 첨부된 `CalHabit.apk` 파일을 다운로드하여 설치하실 수 있습니다.
+
+            ### ✨ 주요 기능 및 특징
+            - **100% 독립형 네이티브 앱**: 브라우저 주소창/하단바 없는 완전한 전체 화면
+            - **Safe Area 최적화**: 스마트폰 펀치홀 및 하단 제스처 바 완벽 보호
+            - **TimeTree 10종 컬러 시스템**: 일정과 할일의 직관적인 디자인 차별화
+            - **모바일-웹 실시간 0.2초 초고속 동기화**: 노트북 웹과 모바일 앱 간 무설정 자동 미러링
+            - **스마트폰 하드웨어 연동**: 안드로이드 뒤로가기 버튼(모달 닫기) 및 햅틱 진동 피드백
+            - **홈 화면 위젯 지원**: 위젯 데이터 브릿지 내장
+
+            ### 📲 스마트폰 설치 방법
+            1. 스마트폰 웹 브라우저에서 아래 **`CalHabit.apk`** 링크를 터치하여 다운로드합니다.
+            2. 다운로드 완료 후 알림창 또는 다운로드 폴더에서 `CalHabit.apk`를 터치하여 **'설치'**를 진행합니다.
+            3. (보안 경고 발생 시 '무시하고 설치' 또는 '이 출처의 앱 허용'을 선택하세요)
+            4. 홈 화면에 생성된 **CalHabit** 앱 아이콘을 터치하여 바로 사용하시면 됩니다!
+          files: build-output/CalHabit.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

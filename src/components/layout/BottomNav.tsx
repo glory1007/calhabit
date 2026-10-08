@@ -40,7 +40,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800 px-2 sm:px-6 py-1 flex items-center justify-between select-none shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800 px-2 sm:px-6 pt-1 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] flex items-center justify-between select-none shadow-lg">
       <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
         {/* 모바일 화면 전용: 좌측 하단 주요 액션 버튼 (일정 추가, 테마 토글, 클라우드 동기화, 설정) */}
         <div className="flex sm:hidden items-center gap-0.5 shrink-0 pr-1 mr-1 border-r border-gray-200 dark:border-zinc-800">
