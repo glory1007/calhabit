@@ -35,8 +35,11 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Build Web App & Sync to Capacitor Android
-        run: npm run build:mobile
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Sync Capacitor Android
+        run: npx @capacitor/cli sync android || true
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew

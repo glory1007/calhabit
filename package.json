@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "tsc -b && vite build",
-    "build:mobile": "npm run build && npx cap sync android",
+    "build:mobile": "npm run build && npx @capacitor/cli sync android",
     "open:android": "npx cap open android",
     "build:apk": "npm run build:mobile && cd android && gradlew.bat assembleDebug && cd ..",
     "lint": "oxlint",
