@@ -5,8 +5,9 @@ const config: CapacitorConfig = {
   appName: 'CalHabit',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
-    cleartext: true
+    url: 'https://calhabit-sage.vercel.app',
+    cleartext: true,
+    androidScheme: 'https'
   },
   plugins: {
     StatusBar: {
