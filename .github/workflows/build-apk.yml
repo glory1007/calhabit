@@ -48,16 +48,26 @@ jobs:
       - name: Build Android Debug APK
         working-directory: android
         run: |
+          set -o pipefail
           ./gradlew :app:assembleDebug --no-daemon --stacktrace 2>&1 | tee ../gradle.log || {
             echo "## ❌ Gradle Build Error Log" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
             tail -n 120 ../gradle.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
+            cat ../gradle.log | tail -n 80
             exit 1
           }
+          echo "=== Found APKs in android directory ==="
+          find . -name "*.apk"
+          mkdir -p ../build-output
+          APK_FILE=$(find . -name "*.apk" | head -n 1)
+          if [ -n "$APK_FILE" ]; then
+            cp "$APK_FILE" ../build-output/CalHabit.apk
+            ls -lh ../build-output/CalHabit.apk
+          fi
 
-      - name: Upload Build Log on Failure
-        if: failure()
+      - name: Upload Build Log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gradle-build-log
@@ -66,16 +76,13 @@ jobs:
       - name: Prepare APK Asset
         run: |
           mkdir -p build-output
-          echo "Locating built APK files..."
-          find . -name "*.apk"
-          if [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
-            cp "android/app/build/outputs/apk/debug/app-debug.apk" build-output/CalHabit.apk
-          else
+          test -f build-output/CalHabit.apk || {
+            echo "Searching for APK in repository..."
+            find . -name "*.apk"
             APK_FILE=$(find . -type f -name "*.apk" | head -n 1)
-            echo "Found alternative APK: $APK_FILE"
             test -n "$APK_FILE" || { echo "No APK found in repository!"; exit 1; }
             cp "$APK_FILE" build-output/CalHabit.apk
-          fi
+          }
           ls -lh build-output/CalHabit.apk
 
       - name: Upload APK to Artifacts
