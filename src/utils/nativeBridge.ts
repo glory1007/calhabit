@@ -143,6 +143,56 @@ export const syncWidgetData = async (events: ScheduleEvent[], habits: Habit[]) =
 
     const payloadJson = JSON.stringify(widgetPayload);
 
+    // 전체 월간 일정 데이터 직렬화 (TimeTree 스타일 위젯용)
+    const monthlyWidgetEvents: Array<{
+      id: string;
+      title: string;
+      date: string;
+      colorHex: string;
+      isTask: boolean;
+      isCompleted: boolean;
+    }> = [];
+
+    events.forEach(e => {
+      try {
+        const start = parseISO(e.startDateTime);
+        const end = parseISO(e.endDateTime);
+        const startDateStr = format(start, 'yyyy-MM-dd');
+        const endDateStr = format(end, 'yyyy-MM-dd');
+
+        if (startDateStr === endDateStr) {
+          monthlyWidgetEvents.push({
+            id: e.id,
+            title: e.title,
+            date: startDateStr,
+            colorHex: e.colorHex || '#5B84B1',
+            isTask: !!e.isTask,
+            isCompleted: !!e.isCompleted,
+          });
+        } else {
+          // 여러 날에 걸친 일정: 각 일자별로 칩 추가
+          const cur = new Date(start);
+          let count = 0;
+          while (cur <= end && count < 21) {
+            monthlyWidgetEvents.push({
+              id: `${e.id}_${count}`,
+              title: e.title,
+              date: format(cur, 'yyyy-MM-dd'),
+              colorHex: e.colorHex || '#5B84B1',
+              isTask: !!e.isTask,
+              isCompleted: !!e.isCompleted,
+            });
+            cur.setDate(cur.getDate() + 1);
+            count++;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    });
+
+    const monthlyPayloadJson = JSON.stringify(monthlyWidgetEvents);
+
     // 네이티브 Preferences (Android SharedPreferences) 저장
     await Preferences.set({
       key: 'calhabit_widget_data',
@@ -156,10 +206,20 @@ export const syncWidgetData = async (events: ScheduleEvent[], habits: Habit[]) =
       key: 'calhabit_widget_habits',
       value: JSON.stringify(todayHabits),
     });
+    await Preferences.set({
+      key: 'calhabit_monthly_widget_events',
+      value: monthlyPayloadJson,
+    });
 
     // 웹 로컬스토리지 백업
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('calhabit_widget_data', payloadJson);
+      localStorage.setItem('calhabit_monthly_widget_events', monthlyPayloadJson);
+    }
+
+    // 안드로이드 홈 화면 위젯 실시간 강제 리드로우 트리거
+    if (typeof (window as any).CalHabitNativeBridge?.notifyWidgetUpdate === 'function') {
+      (window as any).CalHabitNativeBridge.notifyWidgetUpdate();
     }
   } catch (err) {
     console.warn('Widget data bridge sync failed:', err);

@@ -23,6 +23,38 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- 딥링크 (Deep Linking) calhabit:// 스키마 지원 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="calhabit" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- TimeTree 스타일 4x4 / 4x5 월간 캘린더 위젯 Provider -->
+        <receiver
+            android:name=".widget.MonthCalendarWidgetProvider"
+            android:label="@string/widget_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.calhabit.app.ACTION_WIDGET_DATA_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/month_widget_info" />
+        </receiver>
+
+        <!-- 위젯 설정 액티비티 (다크/라이트 테마, 0~100% 배경 투명도 설정) -->
+        <activity
+            android:name=".widget.WidgetConfigureActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
         </activity>
 
         <provider

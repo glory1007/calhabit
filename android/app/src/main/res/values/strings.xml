@@ -4,4 +4,6 @@
     <string name="title_activity_main">CalHabit</string>
     <string name="package_name">com.calhabit.app</string>
     <string name="custom_url_scheme">com.calhabit.app</string>
+    <string name="widget_name">TimeTree 스타일 월간 캘린더</string>
+    <string name="widget_description">홈 화면에서 한눈에 확인하는 TimeTree 스타일 4x4 / 4x5 월간 일정 캘린더 위젯</string>
 </resources>

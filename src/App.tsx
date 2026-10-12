@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { parseISO } from 'date-fns';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
@@ -21,9 +22,19 @@ import {
   syncWidgetData
 } from './utils/nativeBridge';
 
+declare global {
+  interface Window {
+    handleCalHabitDateNavigation?: (dateStr: string) => void;
+    handleCalHabitQuickAdd?: () => void;
+  }
+}
+
 const MainContent: React.FC = () => {
   const {
     viewMode,
+    setViewMode,
+    setSelectedDate,
+    setCurrentMonth,
     events,
     habits,
     settings,
@@ -136,6 +147,32 @@ const MainContent: React.FC = () => {
   useEffect(() => {
     syncWidgetData(events, habits);
   }, [events, habits]);
+
+  // 4. 안드로이드 홈 화면 위젯 딥링크(날짜 클릭 / 일정 추가) 수신 처리
+  useEffect(() => {
+    window.handleCalHabitDateNavigation = (dateStr: string) => {
+      try {
+        const parsed = parseISO(dateStr);
+        if (!isNaN(parsed.getTime())) {
+          setSelectedDate(parsed);
+          setCurrentMonth(parsed);
+          setViewMode('month');
+          setIsTimelineOpen(true);
+        }
+      } catch (e) {
+        console.warn('Failed to handle widget date navigation:', e);
+      }
+    };
+
+    window.handleCalHabitQuickAdd = () => {
+      openEventModal();
+    };
+
+    return () => {
+      delete window.handleCalHabitDateNavigation;
+      delete window.handleCalHabitQuickAdd;
+    };
+  }, [setSelectedDate, setCurrentMonth, setViewMode, setIsTimelineOpen, openEventModal]);
 
   return (
     <div className={`h-screen w-screen overflow-hidden flex flex-col bg-gray-50/50 dark:bg-zinc-950 ${isNativeApp() ? 'pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]' : ''}`}>

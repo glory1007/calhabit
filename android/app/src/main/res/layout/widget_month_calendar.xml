@@ -1,0 +1,3619 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="2dp">
+
+    <!-- 1. 커스텀 라운드 + 투명도 배경 이미지 -->
+    <ImageView
+        android:id="@+id/widget_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="widget_background" />
+
+    <!-- 2. 위젯 메인 컨텐츠 영역 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+
+        <!-- 상단 헤더: YYYY년 M월 & 컨트롤 버튼 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="2dp">
+
+            <LinearLayout
+                android:id="@+id/header_title_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_month_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2026년 10월"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#212121" />
+
+                <TextView
+                    android:id="@+id/tv_month_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CalHabit 캘린더"
+                    android:textSize="9sp"
+                    android:textColor="#888888" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/btn_prev_month"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="3dp"
+                    android:src="@drawable/ic_widget_prev"
+                    android:contentDescription="이전 달" />
+
+                <ImageView
+                    android:id="@+id/btn_next_month"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="3dp"
+                    android:layout_marginStart="2dp"
+                    android:src="@drawable/ic_widget_next"
+                    android:contentDescription="다음 달" />
+
+                <ImageView
+                    android:id="@+id/btn_add_event"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="3dp"
+                    android:layout_marginStart="6dp"
+                    android:src="@drawable/ic_widget_add"
+                    android:contentDescription="일정 추가" />
+
+                <ImageView
+                    android:id="@+id/btn_refresh"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="4dp"
+                    android:layout_marginStart="6dp"
+                    android:src="@drawable/ic_widget_refresh"
+                    android:contentDescription="새로고침" />
+
+                <ImageView
+                    android:id="@+id/btn_settings"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="4dp"
+                    android:layout_marginStart="6dp"
+                    android:src="@drawable/ic_widget_settings"
+                    android:contentDescription="설정" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 요일 헤더: 일(빨강) ~ 토(파랑) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp">
+
+            <TextView
+                android:id="@+id/tv_weekday_sun"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="일"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#E53935" />
+
+            <TextView
+                android:id="@+id/tv_weekday_mon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="월"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/tv_weekday_tue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="화"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/tv_weekday_wed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="수"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/tv_weekday_thu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="목"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/tv_weekday_fri"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="금"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/tv_weekday_sat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="토"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#1E88E5" />
+        </LinearLayout>
+
+        <!-- 6주 x 7일 그리드 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- 주차 0 -->
+            <LinearLayout
+                android:id="@+id/row_0"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <!-- 날짜 셀 [0, 0] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_0"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_0"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [0, 1] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [0, 2] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [0, 3] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [0, 4] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [0, 5] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [0, 6] -->
+                <LinearLayout
+                    android:id="@+id/cell_0_6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_0_6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_0_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_0_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_0_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_0_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 주차 1 -->
+            <LinearLayout
+                android:id="@+id/row_1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <!-- 날짜 셀 [1, 0] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_0"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_0"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [1, 1] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [1, 2] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [1, 3] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [1, 4] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [1, 5] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [1, 6] -->
+                <LinearLayout
+                    android:id="@+id/cell_1_6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_1_6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_1_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_1_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_1_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_1_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 주차 2 -->
+            <LinearLayout
+                android:id="@+id/row_2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <!-- 날짜 셀 [2, 0] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_0"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_0"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [2, 1] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [2, 2] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [2, 3] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [2, 4] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [2, 5] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [2, 6] -->
+                <LinearLayout
+                    android:id="@+id/cell_2_6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_2_6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_2_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_2_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_2_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_2_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 주차 3 -->
+            <LinearLayout
+                android:id="@+id/row_3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <!-- 날짜 셀 [3, 0] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_0"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_0"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [3, 1] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [3, 2] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [3, 3] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [3, 4] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [3, 5] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [3, 6] -->
+                <LinearLayout
+                    android:id="@+id/cell_3_6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_3_6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_3_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_3_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_3_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_3_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 주차 4 -->
+            <LinearLayout
+                android:id="@+id/row_4"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <!-- 날짜 셀 [4, 0] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_0"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_0"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [4, 1] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [4, 2] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [4, 3] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [4, 4] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [4, 5] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [4, 6] -->
+                <LinearLayout
+                    android:id="@+id/cell_4_6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_4_6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_4_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_4_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_4_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_4_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 주차 5 -->
+            <LinearLayout
+                android:id="@+id/row_5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <!-- 날짜 셀 [5, 0] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_0"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_0"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [5, 1] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [5, 2] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [5, 3] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [5, 4] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [5, 5] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 날짜 셀 [5, 6] -->
+                <LinearLayout
+                    android:id="@+id/cell_5_6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="0.5dp">
+
+                    <TextView
+                        android:id="@+id/day_5_6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/chip1_5_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip2_5_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_1"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/chip3_5_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0.5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="0.5dp"
+                        android:paddingBottom="0.5dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="7sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/widget_chip_color_2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/more_5_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="6.5sp"
+                        android:textColor="#888888"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
