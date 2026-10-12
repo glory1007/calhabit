@@ -48,7 +48,7 @@ jobs:
       - name: Build Android Debug APK
         working-directory: android
         run: |
-          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee ../gradle.log || {
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace 2>&1 | tee ../gradle.log || {
             echo "## ❌ Gradle Build Error Log" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
             tail -n 120 ../gradle.log >> $GITHUB_STEP_SUMMARY
@@ -66,11 +66,17 @@ jobs:
       - name: Prepare APK Asset
         run: |
           mkdir -p build-output
-          APK_FILE=$(find android -type f -name "*.apk" | head -n 1)
-          echo "Found APK: $APK_FILE"
-          test -n "$APK_FILE" || { echo "No APK found!"; exit 1; }
-          cp "$APK_FILE" build-output/CalHabit.apk
-          ls -lh build-output/
+          echo "Locating built APK files..."
+          find . -name "*.apk"
+          if [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp "android/app/build/outputs/apk/debug/app-debug.apk" build-output/CalHabit.apk
+          else
+            APK_FILE=$(find . -type f -name "*.apk" | head -n 1)
+            echo "Found alternative APK: $APK_FILE"
+            test -n "$APK_FILE" || { echo "No APK found in repository!"; exit 1; }
+            cp "$APK_FILE" build-output/CalHabit.apk
+          fi
+          ls -lh build-output/CalHabit.apk
 
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
