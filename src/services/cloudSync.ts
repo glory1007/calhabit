@@ -141,6 +141,17 @@ export async function pushToCloud(
 
   const syncKey = config.syncKey?.trim() || DEFAULT_MASTER_SYNC_KEY;
 
+  // [데이터 유실 방지 핵심 가드]: 빈 데이터셋이 원격 클라우드로 전송되어 기존 정상 데이터를 덮어쓰는 것 차단
+  const hasLocalData =
+    (payload.events && payload.events.length > 0) ||
+    (payload.habits && payload.habits.length > 0) ||
+    (payload.todos && payload.todos.length > 0);
+
+  if (!hasLocalData) {
+    console.warn('Blocked empty payload from pushing to cloud (preventing data wipe)');
+    return { success: false, error: 'Empty payload push blocked' };
+  }
+
   const fullPayload: SyncPayload = {
     ...payload,
     updatedAt: new Date().toISOString(),

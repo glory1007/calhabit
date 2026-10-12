@@ -203,18 +203,18 @@ export const MonthCalendar: React.FC = () => {
       const hasHidden = hiddenCounts.some(c => c > 0);
       const maxVisibleRow = visibleSegments.reduce((max, s) => Math.max(max, s.row), -1);
       const displayRows = hasHidden ? (maxMobileRows + 1) : Math.max(1, maxVisibleRow + 1);
-      // 음력 일자 표시 시 헤더 높이 28px (불필요한 빈 여백 대폭 제거)
-      const headerTopOffset = settings.showLunarDates ? 28 : 22;
-      // TimeTree 황금 세로 비율: 최소 76px, 일정이 많을 때만 자연스럽게 확장
-      dynamicWeekHeight = Math.max(76, headerTopOffset + displayRows * 19.5 + 4);
+      // 음력 일자 표시 시 안전 높이 38px 확보 (양력 20px + 음력 12px + 6px 안전 여백으로 일정 겹침 완전 차단)
+      const headerTopOffset = settings.showLunarDates ? 38 : 24;
+      // TimeTree 안정적인 세로 비율: 최소 86px, 일정이 많을 때만 자연스럽게 확장
+      dynamicWeekHeight = Math.max(86, headerTopOffset + displayRows * 19.5 + 4);
     } else {
       // PC/대화면: 모든 일정 100% 노출 & 넉넉한 세로 높이 보장
       visibleSegments = packedSegments;
       const maxRow = packedSegments.reduce((max, s) => Math.max(max, s.row), -1);
       const totalRowCount = maxRow + 1;
-      const headerTopOffset = settings.showLunarDates ? 30 : 24;
+      const headerTopOffset = settings.showLunarDates ? 40 : 26;
       const neededHeight = headerTopOffset + totalRowCount * 20.5 + 6;
-      dynamicWeekHeight = Math.max(88, neededHeight);
+      dynamicWeekHeight = Math.max(94, neededHeight);
     }
 
     return { visibleSegments, hiddenCounts, dynamicWeekHeight };
@@ -406,12 +406,12 @@ export const MonthCalendar: React.FC = () => {
                                 : ''
                             }`}
                           >
-                            {/* 상단 양력 + 음력 (가운데 정렬 및 음력 날짜 가림 방지 컴팩트 배치) */}
+                            {/* 상단 양력 + 음력 (가운데 정렬 및 음력 날짜 가림 방지 안전 높이 35px 확보) */}
                             <div
-                              className={`relative flex flex-col items-center justify-start w-full mb-0.5 shrink-0 px-0.5 ${
+                              className={`relative flex flex-col items-center justify-start w-full mb-1 shrink-0 px-0.5 ${
                                 settings.showLunarDates && isCurMonth
-                                  ? 'min-h-[26px] sm:min-h-[28px]'
-                                  : 'min-h-[20px] sm:min-h-[22px]'
+                                  ? 'min-h-[35px] sm:min-h-[37px]'
+                                  : 'min-h-[22px] sm:min-h-[24px]'
                               }`}
                             >
                               {/* 타임라인 시계 버튼 (선택된 셀 좌측에 배치) */}
@@ -463,10 +463,10 @@ export const MonthCalendar: React.FC = () => {
                       })}
                     </div>
 
-                    {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (음력 텍스트 바로 아래에서 시작) */}
+                    {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (음력 텍스트 아래 4px 이상의 안전 여백을 두고 pt-[38px]에서 시작) */}
                     <div
                       className={`absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[17.5px] sm:auto-rows-[18.5px] gap-y-[1.5px] sm:gap-y-[2px] w-full pb-0.5 pointer-events-none z-10 transition-all ${
-                        settings.showLunarDates ? 'pt-[27px] sm:pt-[29px]' : 'pt-[21px] sm:pt-[23px]'
+                        settings.showLunarDates ? 'pt-[38px] sm:pt-[40px]' : 'pt-[24px] sm:pt-[26px]'
                       }`}
                       style={{ minHeight: `${dynamicWeekHeight}px` }}
                     >

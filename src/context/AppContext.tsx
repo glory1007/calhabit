@@ -133,26 +133,92 @@ const STORAGE_KEYS = {
   SETTINGS: 'calhabit_settings_v1',
 };
 
+const BACKUP_KEYS = {
+  EVENTS_SAFE: 'calhabit_events_backup_safe',
+  HABITS_SAFE: 'calhabit_habits_backup_safe',
+  TODOS_SAFE: 'calhabit_todos_backup_safe',
+  CATEGORIES_SAFE: 'calhabit_categories_backup_safe',
+  HAS_USER_DATA: 'calhabit_has_user_data_flag',
+  UPDATED_AT: 'calhabit_data_updated_at',
+};
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 로컬 스토리지 초기화
+  // [영구 데이터 보존 1단계]: 로컬 스토리지 + 안전 백업 스토리지 우선 복원 (데이터 초기화 완전 차단)
   const [events, setEvents] = useState<ScheduleEvent[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.EVENTS);
-    return saved ? JSON.parse(saved) : INITIAL_EVENTS;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.EVENTS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      const backup = localStorage.getItem(BACKUP_KEYS.EVENTS_SAFE);
+      if (backup) {
+        const parsed = JSON.parse(backup);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      // 사용자가 이전에 직접 데이터를 사용/작성한 이력이 있으면 Mock 데이터 재주입 차단
+      if (localStorage.getItem(BACKUP_KEYS.HAS_USER_DATA) === 'true') {
+        return [];
+      }
+    } catch (e) {
+      console.error('Storage read error for events', e);
+    }
+    return INITIAL_EVENTS;
   });
 
   const [habits, setHabits] = useState<Habit[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.HABITS);
-    return saved ? JSON.parse(saved) : INITIAL_HABITS;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.HABITS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      const backup = localStorage.getItem(BACKUP_KEYS.HABITS_SAFE);
+      if (backup) {
+        const parsed = JSON.parse(backup);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      if (localStorage.getItem(BACKUP_KEYS.HAS_USER_DATA) === 'true') {
+        return [];
+      }
+    } catch (e) {
+      console.error('Storage read error for habits', e);
+    }
+    return INITIAL_HABITS;
   });
 
   const [todos, setTodos] = useState<TodoItem[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.TODOS);
-    return saved ? JSON.parse(saved) : INITIAL_TODOS;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.TODOS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      const backup = localStorage.getItem(BACKUP_KEYS.TODOS_SAFE);
+      if (backup) {
+        const parsed = JSON.parse(backup);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      if (localStorage.getItem(BACKUP_KEYS.HAS_USER_DATA) === 'true') {
+        return [];
+      }
+    } catch (e) {
+      console.error('Storage read error for todos', e);
+    }
+    return INITIAL_TODOS;
   });
 
   const [categories, setCategories] = useState<CategoryFolder[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
-    const parsed: CategoryFolder[] = saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
+    let parsed: CategoryFolder[] = INITIAL_CATEGORIES;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.CATEGORIES) || localStorage.getItem(BACKUP_KEYS.CATEGORIES_SAFE);
+      if (saved) {
+        const json = JSON.parse(saved);
+        if (Array.isArray(json) && json.length > 0) parsed = json;
+      }
+    } catch (e) {
+      console.error('Storage read error for categories', e);
+    }
     return parsed.map(c => {
       if (c.emoji) return c;
       if (c.name.includes('개인')) return { ...c, emoji: '👤' };
@@ -199,25 +265,77 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const isRemoteUpdatingRef = React.useRef(false);
   const autoPushTimeoutRef = React.useRef<any>(null);
+  const hasInitialPullCompletedRef = React.useRef(false);
 
+  // 최신 events 상태 참조용 ref (비동기 충돌 방어)
+  const eventsRef = React.useRef(events);
+  eventsRef.current = events;
+
+  // [영구 데이터 보존 2단계]: 원격 페이로드 수신 시 안전 방어 로직
   const applyRemotePayload = (data: SyncPayload) => {
+    if (!data) return;
+
+    // 타임스탬프 비교: 로컬에 데이터가 있고, 로컬이 원격보다 더 최신이면 원격 덮어쓰기 거부 후 로컬 보존
+    const localUpdatedAt = localStorage.getItem(BACKUP_KEYS.UPDATED_AT);
+    if (localUpdatedAt && data.updatedAt) {
+      const localTime = new Date(localUpdatedAt).getTime();
+      const remoteTime = new Date(data.updatedAt).getTime();
+      if (localTime > remoteTime && eventsRef.current.length > 0) {
+        console.warn('Local data is newer than remote; preserving local and scheduling push');
+        setTimeout(() => handleManualPush(), 800);
+        return;
+      }
+    }
+
     isRemoteUpdatingRef.current = true;
-    if (data.events && Array.isArray(data.events)) setEvents(data.events);
-    if (data.habits && Array.isArray(data.habits)) setHabits(data.habits);
-    if (data.todos && Array.isArray(data.todos)) setTodos(data.todos);
-    if (data.categories && Array.isArray(data.categories)) setCategories(data.categories);
+
+    // 핵심: 원격이 빈 배열인데 로컬에 이미 유효한 이벤트가 있다면 절대 빈 배열로 삭제하지 않음!
+    if (data.events && Array.isArray(data.events)) {
+      if (data.events.length > 0 || eventsRef.current.length === 0) {
+        setEvents(data.events);
+        try {
+          localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(data.events));
+          if (data.events.length > 0) {
+            localStorage.setItem(BACKUP_KEYS.EVENTS_SAFE, JSON.stringify(data.events));
+            localStorage.setItem(BACKUP_KEYS.HAS_USER_DATA, 'true');
+          }
+        } catch (e) {}
+      } else {
+        console.warn('Blocked remote empty events from overwriting valid local events');
+      }
+    }
+
+    if (data.habits && Array.isArray(data.habits)) {
+      if (data.habits.length > 0 || habits.length === 0) {
+        setHabits(data.habits);
+      }
+    }
+
+    if (data.todos && Array.isArray(data.todos)) {
+      if (data.todos.length > 0 || todos.length === 0) {
+        setTodos(data.todos);
+      }
+    }
+
+    if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
+      setCategories(data.categories);
+    }
+
     if (data.settings) {
       setSettings(prev => ({ ...prev, ...data.settings }));
       if (data.settings.theme) {
         document.documentElement.classList.toggle('dark', data.settings.theme === 'dark');
       }
     }
+
     if (typeof data.isTimelineOpen === 'boolean') {
       setIsTimelineOpen(data.isTimelineOpen);
     }
+
     setLastSyncedAt(data.updatedAt || new Date().toISOString());
     setSyncStatus('synced');
     setSyncError(null);
+
     setTimeout(() => {
       isRemoteUpdatingRef.current = false;
     }, 800);
@@ -268,9 +386,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 1. 초기 로드 시 클라우드 데이터 가져오기 & Realtime 구독 (WebSockets 초고속 동기화)
   useEffect(() => {
-    if (!syncConfig.enabled) return;
+    if (!syncConfig.enabled) {
+      hasInitialPullCompletedRef.current = true;
+      return;
+    }
 
-    handleManualPull();
+    handleManualPull().finally(() => {
+      hasInitialPullCompletedRef.current = true;
+    });
 
     const unsubscribe = subscribeToRealtimeSync(
       syncConfig,
@@ -301,14 +424,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
   }, [syncConfig.enabled, syncConfig.syncKey, syncConfig.provider]);
 
-  // 2. 데이터 변경 시 자동 업로드 (Debounced Push: 300ms 초고속 반영)
+  // 2. 데이터 변경 시 자동 업로드 (초기 pull 완료 후에만 동작하여 빈 데이터 덮어쓰기 방지)
   useEffect(() => {
     if (!syncConfig.enabled || isRemoteUpdatingRef.current) return;
+    if (!hasInitialPullCompletedRef.current) return;
 
     if (autoPushTimeoutRef.current) clearTimeout(autoPushTimeoutRef.current);
     autoPushTimeoutRef.current = setTimeout(() => {
       handleManualPush();
-    }, 300);
+    }, 400);
 
     return () => {
       if (autoPushTimeoutRef.current) clearTimeout(autoPushTimeoutRef.current);
@@ -325,21 +449,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [settings.theme]);
 
-  // 로컬 스토리지 동기화
+  // [영구 데이터 보존 3단계]: 로컬 스토리지 + 안전 백업 스토리지 즉시 동기화
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
+    try {
+      localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
+      if (events.length > 0) {
+        localStorage.setItem(BACKUP_KEYS.EVENTS_SAFE, JSON.stringify(events));
+        localStorage.setItem(BACKUP_KEYS.HAS_USER_DATA, 'true');
+      }
+      localStorage.setItem(BACKUP_KEYS.UPDATED_AT, new Date().toISOString());
+    } catch (e) {
+      console.error('Storage write error for events', e);
+    }
   }, [events]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(habits));
+    try {
+      localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(habits));
+      if (habits.length > 0) {
+        localStorage.setItem(BACKUP_KEYS.HABITS_SAFE, JSON.stringify(habits));
+        localStorage.setItem(BACKUP_KEYS.HAS_USER_DATA, 'true');
+      }
+    } catch (e) {
+      console.error('Storage write error for habits', e);
+    }
   }, [habits]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(todos));
+    try {
+      localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(todos));
+      if (todos.length > 0) {
+        localStorage.setItem(BACKUP_KEYS.TODOS_SAFE, JSON.stringify(todos));
+        localStorage.setItem(BACKUP_KEYS.HAS_USER_DATA, 'true');
+      }
+    } catch (e) {
+      console.error('Storage write error for todos', e);
+    }
   }, [todos]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    try {
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+      if (categories.length > 0) {
+        localStorage.setItem(BACKUP_KEYS.CATEGORIES_SAFE, JSON.stringify(categories));
+      }
+    } catch (e) {
+      console.error('Storage write error for categories', e);
+    }
   }, [categories]);
 
   useEffect(() => {
