@@ -1,5 +1,15 @@
 {
   "framework": "vite",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/apk",
+      "destination": "/CalHabit.apk"
+    },
+    {
+      "source": "/download",
+      "destination": "/CalHabit.apk"
+    }
+  ]
 }

@@ -44,6 +44,9 @@ const MainContent: React.FC = () => {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [showInstallBanner, setShowInstallBanner] = useState(() => {
+    return !isNativeApp() && localStorage.getItem('calhabit_hide_install_banner') !== 'true';
+  });
   const { isTagModalOpen, setIsTagModalOpen, isTimelineOpen, setIsTimelineOpen } = useApp();
 
   const handleQuickAdd = () => {
@@ -138,6 +141,35 @@ const MainContent: React.FC = () => {
     <div className={`h-screen w-screen overflow-hidden flex flex-col bg-gray-50/50 dark:bg-zinc-950 ${isNativeApp() ? 'pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]' : ''}`}>
       {/* 1. 슬림 상단 헤더 */}
       <Header onOpenSettings={() => setIsSettingsOpen(true)} />
+
+      {/* 안드로이드 전용 앱 설치 유도 배너 (웹 브라우저 접속 시 노출) */}
+      {showInstallBanner && (
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 flex items-center justify-between text-xs shadow-xs z-30 shrink-0">
+          <div className="flex items-center gap-2 truncate">
+            <span className="text-sm">📲</span>
+            <span className="font-medium truncate">스마트폰에 CalHabit 앱을 설치해보세요!</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href="/CalHabit.apk"
+              download="CalHabit.apk"
+              className="px-2.5 py-1 bg-white text-emerald-700 font-bold rounded-lg text-[11px] shadow-xs hover:bg-emerald-50 active:scale-95 transition-all"
+            >
+              APK 다운로드
+            </a>
+            <button
+              onClick={() => {
+                setShowInstallBanner(false);
+                localStorage.setItem('calhabit_hide_install_banner', 'true');
+              }}
+              className="text-white/80 hover:text-white p-0.5"
+              title="닫기"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 2. 메인 뷰 컨텐츠 영역 (대화면 100vw, 100% Full-Viewport 확장) */}
       <main className="flex-1 w-full overflow-hidden flex flex-col pb-16 md:pb-12">

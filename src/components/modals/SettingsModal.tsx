@@ -1,7 +1,8 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Moon, Volume2, Smartphone, Calendar, CloudSun, RotateCcw, Cloud } from 'lucide-react';
+import { X, Moon, Volume2, Smartphone, Calendar, CloudSun, RotateCcw, Cloud, Download } from 'lucide-react';
 import { INITIAL_EVENTS, INITIAL_HABITS, INITIAL_TODOS, INITIAL_CATEGORIES } from '../../data/mockData';
+import { isNativeApp } from '../../utils/nativeBridge';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -151,6 +152,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               {syncConfig?.enabled ? '동기화 관리' : '연동 설정'}
             </button>
           </div>
+
+          {/* 안드로이드 전용 앱 다운로드 (.apk) */}
+          {!isNativeApp() && (
+            <div className="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Smartphone size={18} className="text-emerald-600 dark:text-emerald-400" />
+                <div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
+                    안드로이드 앱 설치 (.apk)
+                  </div>
+                  <div className="text-[11px] text-gray-500 dark:text-zinc-400">
+                    스마트폰 바탕화면 전용 앱으로 설치하기
+                  </div>
+                </div>
+              </div>
+              <a
+                href="/CalHabit.apk"
+                download="CalHabit.apk"
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+              >
+                <Download size={13} />
+                <span>다운로드</span>
+              </a>
+            </div>
+          )}
 
           {/* 데이터 초기화 */}
           <div className="pt-4 border-t border-gray-100 dark:border-zinc-800 flex justify-between items-center">
