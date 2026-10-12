@@ -301,17 +301,25 @@ export const WeeklyTimetable: React.FC = () => {
                 key={day.toISOString()}
                 className="p-1 border-r border-gray-100 dark:border-zinc-800/80 last:border-r-0 flex flex-col gap-1 overflow-hidden"
               >
-                {allDay.map(evt => (
-                  <div
-                    key={evt.id}
-                    onClick={() => openEventModal(evt)}
-                    className="px-2 py-0.5 rounded-md text-[11px] font-semibold text-white truncate cursor-pointer hover:opacity-90 shadow-2xs text-center"
-                    style={{ backgroundColor: evt.colorHex }}
-                    title={evt.title}
-                  >
-                    {evt.title}
-                  </div>
-                ))}
+                {allDay.map(evt => {
+                  const isTask = evt.isTask;
+                  return (
+                    <div
+                      key={evt.id}
+                      onClick={() => openEventModal(evt)}
+                      className="px-2 py-0.5 rounded-[3.5px] text-[10.5px] font-semibold truncate cursor-pointer hover:opacity-90 shadow-2xs text-center transition-all"
+                      style={{
+                        backgroundColor: isTask ? `${evt.colorHex}26` : evt.colorHex,
+                        color: isTask ? evt.colorHex : '#FFFFFF',
+                      }}
+                      title={evt.title}
+                    >
+                      <span className={evt.isCompleted ? 'line-through opacity-60' : ''}>
+                        {evt.title}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             );
           })}

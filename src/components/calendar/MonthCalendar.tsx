@@ -179,19 +179,21 @@ export const MonthCalendar: React.FC = () => {
       });
     }
 
-    // [요구사항 2: 반응형 분기 처리]
-    // PC/노트북: 일정이 5개 이상이어도 행 높이가 동적으로 넉넉히 늘어나 100% 보이도록 처리 (neededHeight = 34 + totalRowCount * 26 + 12px)
-    // 모바일: 세로 공간 확보를 위해 각 날짜 셀 최대 3개만 표시 (row < 3), 4개 이상은 +N개 뱃지로 표시
+    // [TimeTree 스타일 뷰포트 & 세로 비율 최적화]
+    // PC/노트북: 모든 일정이 100% 보이도록 슬림 칩과 최적화된 패딩으로 자연스러운 확장
+    // 모바일: 상단 광고 없는 공간 활용을 극대화하여 최대 4개 일정까지 기본 직접 노출, 5개 이상일 때 +N개 뱃지로 단정하게 정돈
     let visibleSegments: WeekEventSegment[];
     const hiddenCounts = Array(7).fill(0);
     let dynamicWeekHeight: number;
 
+    const maxMobileRows = 4; // 모바일에서 최대 4개 일정까지 기본 100% 직접 노출
+
     if (isMobile) {
-      // 모바일: 0, 1, 2행 (최대 3개) 노출
-      visibleSegments = packedSegments.filter(s => s.row < 3);
+      // 모바일: 0, 1, 2, 3행 (최대 4개) 직접 노출
+      visibleSegments = packedSegments.filter(s => s.row < maxMobileRows);
 
       for (const item of packedSegments) {
-        if (item.row >= 3) {
+        if (item.row >= maxMobileRows) {
           for (let c = item.startCol; c <= item.endCol; c++) {
             hiddenCounts[c]++;
           }
@@ -200,18 +202,19 @@ export const MonthCalendar: React.FC = () => {
 
       const hasHidden = hiddenCounts.some(c => c > 0);
       const maxVisibleRow = visibleSegments.reduce((max, s) => Math.max(max, s.row), -1);
-      const displayRows = hasHidden ? 4 : Math.max(2, maxVisibleRow + 1);
-      // 음력 일자 표시 시 헤더 높이 42px 반영 (음력 날짜 가림 버그 완전 차단)
-      const headerTopOffset = settings.showLunarDates ? 42 : 30;
-      dynamicWeekHeight = Math.max(105, headerTopOffset + displayRows * 22 + 6);
+      const displayRows = hasHidden ? (maxMobileRows + 1) : Math.max(1, maxVisibleRow + 1);
+      // 음력 일자 표시 시 헤더 높이 28px (불필요한 빈 여백 대폭 제거)
+      const headerTopOffset = settings.showLunarDates ? 28 : 22;
+      // TimeTree 황금 세로 비율: 최소 76px, 일정이 많을 때만 자연스럽게 확장
+      dynamicWeekHeight = Math.max(76, headerTopOffset + displayRows * 19.5 + 4);
     } else {
       // PC/대화면: 모든 일정 100% 노출 & 넉넉한 세로 높이 보장
       visibleSegments = packedSegments;
       const maxRow = packedSegments.reduce((max, s) => Math.max(max, s.row), -1);
       const totalRowCount = maxRow + 1;
-      const headerTopOffset = settings.showLunarDates ? 46 : 34;
-      const neededHeight = headerTopOffset + totalRowCount * 26 + 14;
-      dynamicWeekHeight = Math.max(120, neededHeight);
+      const headerTopOffset = settings.showLunarDates ? 30 : 24;
+      const neededHeight = headerTopOffset + totalRowCount * 20.5 + 6;
+      dynamicWeekHeight = Math.max(88, neededHeight);
     }
 
     return { visibleSegments, hiddenCounts, dynamicWeekHeight };
@@ -389,13 +392,13 @@ export const MonthCalendar: React.FC = () => {
                             }}
                             onDrop={e => handleDayDrop(e, day)}
                             style={{ minHeight: `${dynamicWeekHeight}px` }}
-                            className={`p-1 sm:p-1.5 border-r border-gray-100 dark:border-zinc-800/80 last:border-r-0 flex flex-col justify-start transition-all cursor-pointer group ${
+                            className={`p-0.5 sm:p-1 border-r border-gray-100 dark:border-zinc-800/80 last:border-r-0 flex flex-col justify-start transition-all cursor-pointer group ${
                               !isCurMonth
                                 ? 'bg-gray-50/40 dark:bg-zinc-950/40 text-gray-400 dark:text-zinc-600'
                                 : 'bg-white dark:bg-zinc-900 hover:bg-slate-50/80 dark:hover:bg-zinc-850/50'
                             } ${
                               isSelected
-                                ? 'bg-slate-100/70 dark:bg-zinc-800/60 ring-2 ring-slate-400 dark:ring-zinc-500 ring-inset z-0'
+                                ? 'bg-slate-100/60 dark:bg-zinc-800/50 ring-1.5 ring-slate-400 dark:ring-zinc-500 ring-inset z-0'
                                 : ''
                             } ${
                               isDragTarget
@@ -403,12 +406,12 @@ export const MonthCalendar: React.FC = () => {
                                 : ''
                             }`}
                           >
-                            {/* 상단 양력 + 음력 (가운데 정렬 및 음력 날짜 가림 방지 안전 여백 확보) */}
+                            {/* 상단 양력 + 음력 (가운데 정렬 및 음력 날짜 가림 방지 컴팩트 배치) */}
                             <div
-                              className={`relative flex flex-col items-center justify-start w-full mb-1 shrink-0 px-0.5 ${
+                              className={`relative flex flex-col items-center justify-start w-full mb-0.5 shrink-0 px-0.5 ${
                                 settings.showLunarDates && isCurMonth
-                                  ? 'min-h-[38px] sm:min-h-[42px]'
-                                  : 'min-h-[26px] sm:min-h-[28px]'
+                                  ? 'min-h-[26px] sm:min-h-[28px]'
+                                  : 'min-h-[20px] sm:min-h-[22px]'
                               }`}
                             >
                               {/* 타임라인 시계 버튼 (선택된 셀 좌측에 배치) */}
@@ -426,16 +429,16 @@ export const MonthCalendar: React.FC = () => {
                                   }`}
                                   title={isTimelineOpen ? '24시간 타임라인 닫기' : '24시간 타임라인 열기'}
                                 >
-                                  <Clock size={11} />
+                                  <Clock size={10} />
                                 </button>
                               )}
 
                               {/* 날짜 숫자 & 은은한 음력 텍스트 (중앙 정렬) */}
                               <div className="flex flex-col items-center justify-center min-w-0">
                                 <span
-                                  className={`text-xs sm:text-[13px] font-semibold w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform tabular-nums shrink-0 ${
+                                  className={`text-[11.5px] sm:text-[12.5px] font-semibold w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full flex items-center justify-center transition-transform tabular-nums shrink-0 ${
                                     isCurrentDay
-                                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs font-bold'
+                                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs font-bold'
                                       : !isCurMonth
                                       ? 'text-gray-300 dark:text-zinc-600 font-normal'
                                       : isSun
@@ -449,7 +452,7 @@ export const MonthCalendar: React.FC = () => {
                                 </span>
 
                                 {settings.showLunarDates && isCurMonth && (
-                                  <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-zinc-400 font-medium tabular-nums leading-none truncate mt-0.5">
+                                  <span className="text-[8.5px] sm:text-[9.5px] text-gray-400 dark:text-zinc-500 font-medium tabular-nums leading-none truncate mt-0.5">
                                     {lunarText}
                                   </span>
                                 )}
@@ -460,10 +463,10 @@ export const MonthCalendar: React.FC = () => {
                       })}
                     </div>
 
-                    {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (음력 텍스트 아래에서부터 시작하도록 상단 패딩 확보) */}
+                    {/* 2. 전폭 7열 이벤트 매트릭스 레이어 (음력 텍스트 바로 아래에서 시작) */}
                     <div
-                      className={`absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[20px] sm:auto-rows-[22px] gap-y-0.5 sm:gap-y-1 w-full pb-1 pointer-events-none z-10 transition-all ${
-                        settings.showLunarDates ? 'pt-[42px] sm:pt-[48px]' : 'pt-7 sm:pt-7.5'
+                      className={`absolute inset-x-0 top-0 bottom-0 grid grid-cols-7 auto-rows-[17.5px] sm:auto-rows-[18.5px] gap-y-[1.5px] sm:gap-y-[2px] w-full pb-0.5 pointer-events-none z-10 transition-all ${
+                        settings.showLunarDates ? 'pt-[27px] sm:pt-[29px]' : 'pt-[21px] sm:pt-[23px]'
                       }`}
                       style={{ minHeight: `${dynamicWeekHeight}px` }}
                     >
@@ -475,23 +478,20 @@ export const MonthCalendar: React.FC = () => {
                           gridRow: item.row + 1,
                         };
 
-                        let containerClasses = `h-[19px] sm:h-[21px] text-[10px] sm:text-[11px] font-medium tracking-tight shadow-2xs truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center justify-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 pointer-events-auto z-10 text-center ${
-                          item.isFirstWeekOfEvent ? 'rounded-l-xs sm:rounded-l-sm ml-0.5 sm:ml-1' : 'rounded-l-none ml-0'
+                        let containerClasses = `h-[17.5px] sm:h-[18.5px] text-[10px] sm:text-[10.5px] font-semibold tracking-tight truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center justify-center px-1 sm:px-1.5 pointer-events-auto z-10 text-center ${
+                          item.isFirstWeekOfEvent ? 'rounded-l-[3.5px] ml-[1px]' : 'rounded-l-none ml-0'
                         } ${
-                          item.isLastWeekOfEvent ? 'rounded-r-xs sm:rounded-r-sm mr-0.5 sm:mr-1' : 'rounded-r-none mr-0'
+                          item.isLastWeekOfEvent ? 'rounded-r-[3.5px] mr-[1px]' : 'rounded-r-none mr-0'
                         }`;
 
                         if (!isTask) {
-                          // [TimeTree 규칙 1] 일정 (Event): 선택한 TimeTree 컬러 완전 채움 (Solid Color Fill) + 선명한 흰색(White, #FFFFFF) 고정
+                          // [TimeTree 규칙 1] 일정 (Event): 솔리드 컬러 채움 + 선명한 흰색(#FFFFFF) 고정
                           containerStyle.backgroundColor = item.event.colorHex;
                           containerStyle.color = '#FFFFFF';
-                          containerClasses += ' font-semibold';
                         } else {
-                          // [TimeTree 규칙 2] 할일 (To-Do): 15~20% 은은한 틴트 배경 + 선택한 원래의 진한 TimeTree 고유 색상 글자
+                          // [TimeTree 규칙 2] 할일 (To-Do): 15~20% 은은한 소프트 틴트 파스텔 채움 + 본래 테마 고유 색상 텍스트 (투박한 테두리 및 체크박스 아이콘 완전 제거)
                           containerStyle.backgroundColor = `${item.event.colorHex}26`;
-                          containerStyle.borderColor = `${item.event.colorHex}66`;
                           containerStyle.color = item.event.colorHex;
-                          containerClasses += ' border-[1.5px] font-semibold';
                         }
 
                         return (
@@ -504,33 +504,15 @@ export const MonthCalendar: React.FC = () => {
                             style={containerStyle}
                             title={`${item.event.title} (드래그하여 날짜 이동, 탭하여 퀵 메뉴)`}
                           >
-                            {/* 할일 체크박스 */}
-                            {isTask && (
-                              <button
-                                type="button"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  toggleEventTaskCompleted(item.event.id);
-                                }}
-                                className={`w-3 h-3 rounded flex items-center justify-center shrink-0 border transition-colors ${
-                                  item.event.isCompleted
-                                    ? 'bg-emerald-500 text-white border-emerald-500'
-                                    : 'border-current hover:bg-black/10'
-                                }`}
-                              >
-                                {item.event.isCompleted && <Check size={8} strokeWidth={3} />}
-                              </button>
-                            )}
-
-                            {/* 일정 제목 (시작 시간 텍스트 제거 및 가운데 정렬) */}
-                            <span className={`truncate leading-none text-center w-full ${item.event.isCompleted ? 'line-through opacity-70' : ''}`}>
+                            {/* 일정/할일 제목 (가운데 정렬, 둥근 폰트 볼드감, 체크박스 아이콘 제거) */}
+                            <span className={`truncate leading-none text-center w-full ${item.event.isCompleted ? 'line-through opacity-60' : ''}`}>
                               {item.event.title}
                             </span>
                           </div>
                         );
                       })}
 
-                      {/* 모바일 4행 이상 숨겨진 일정 표시 (+N개 뱃지 및 터치 시 팝업) */}
+                      {/* 모바일 5행 이상 숨겨진 일정 표시 (+N개 뱃지 및 터치 시 팝업) */}
                       {hiddenCounts.map((count, colIdx) => {
                         if (count <= 0) return null;
                         const day = week[colIdx];
@@ -546,10 +528,10 @@ export const MonthCalendar: React.FC = () => {
                                 events: getEventsForDay(day),
                               });
                             }}
-                            className="pointer-events-auto h-[18px] sm:h-[20px] text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded mx-0.5 px-1 cursor-pointer flex items-center justify-center shadow-2xs transition-all active:scale-95"
+                            className="pointer-events-auto h-[17px] sm:h-[18px] text-[9.5px] sm:text-[10px] font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-[3.5px] mx-[1px] px-1 cursor-pointer flex items-center justify-center shadow-2xs transition-all active:scale-95"
                             style={{
                               gridColumn: `${colIdx + 1} / span 1`,
-                              gridRow: 4,
+                              gridRow: 5,
                             }}
                             title={`${format(day, 'M월 d일')} 전체 일정 (+${count}개)`}
                           >
