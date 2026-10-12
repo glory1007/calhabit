@@ -472,17 +472,23 @@ export const MonthCalendar: React.FC = () => {
                     >
                       {visibleSegments.map(item => {
                         const isTask = item.event.isTask;
+                        const isFirst = item.isFirstWeekOfEvent;
+                        const isLast = item.isLastWeekOfEvent;
 
+                        // [TimeTree 스타일 핵심] 명확한 5px 둥근 알약 모서리 곡률 및 좌우 1.5px 여백 직접 강제 부여
                         const containerStyle: React.CSSProperties = {
                           gridColumn: `${item.startCol + 1} / span ${item.colSpan}`,
                           gridRow: item.row + 1,
+                          borderTopLeftRadius: isFirst ? '5px' : '0px',
+                          borderBottomLeftRadius: isFirst ? '5px' : '0px',
+                          borderTopRightRadius: isLast ? '5px' : '0px',
+                          borderBottomRightRadius: isLast ? '5px' : '0px',
+                          marginLeft: isFirst ? '1.5px' : '0px',
+                          marginRight: isLast ? '1.5px' : '0px',
+                          fontFamily: "'NanumSquareRound', 'Gowun Dodum', sans-serif",
                         };
 
-                        let containerClasses = `h-[17.5px] sm:h-[18.5px] text-[10px] sm:text-[10.5px] font-semibold tracking-tight truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center justify-center px-1 sm:px-1.5 pointer-events-auto z-10 text-center ${
-                          item.isFirstWeekOfEvent ? 'rounded-l-[3.5px] ml-[1px]' : 'rounded-l-none ml-0'
-                        } ${
-                          item.isLastWeekOfEvent ? 'rounded-r-[3.5px] mr-[1px]' : 'rounded-r-none mr-0'
-                        }`;
+                        let containerClasses = 'h-[17.5px] sm:h-[18.5px] text-[10px] sm:text-[10.5px] font-bold tracking-tight truncate cursor-grab active:cursor-grabbing hover:opacity-95 transition-all flex items-center justify-center px-1 sm:px-1.5 pointer-events-auto z-10 text-center shadow-2xs';
 
                         if (!isTask) {
                           // [TimeTree 규칙 1] 일정 (Event): 솔리드 컬러 채움 + 선명한 흰색(#FFFFFF) 고정
@@ -505,7 +511,10 @@ export const MonthCalendar: React.FC = () => {
                             title={`${item.event.title} (드래그하여 날짜 이동, 탭하여 퀵 메뉴)`}
                           >
                             {/* 일정/할일 제목 (가운데 정렬, 둥근 폰트 볼드감, 체크박스 아이콘 제거) */}
-                            <span className={`truncate leading-none text-center w-full ${item.event.isCompleted ? 'line-through opacity-60' : ''}`}>
+                            <span
+                              className={`truncate leading-none text-center w-full font-bold ${item.event.isCompleted ? 'line-through opacity-60' : ''}`}
+                              style={{ fontFamily: "'NanumSquareRound', 'Gowun Dodum', sans-serif" }}
+                            >
                               {item.event.title}
                             </span>
                           </div>
@@ -528,10 +537,14 @@ export const MonthCalendar: React.FC = () => {
                                 events: getEventsForDay(day),
                               });
                             }}
-                            className="pointer-events-auto h-[17px] sm:h-[18px] text-[9.5px] sm:text-[10px] font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-[3.5px] mx-[1px] px-1 cursor-pointer flex items-center justify-center shadow-2xs transition-all active:scale-95"
+                            className="pointer-events-auto h-[17px] sm:h-[18px] text-[9.5px] sm:text-[10px] font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 mx-[1px] px-1 cursor-pointer flex items-center justify-center shadow-2xs transition-all active:scale-95"
                             style={{
                               gridColumn: `${colIdx + 1} / span 1`,
                               gridRow: 5,
+                              borderRadius: '5px',
+                              marginLeft: '1.5px',
+                              marginRight: '1.5px',
+                              fontFamily: "'NanumSquareRound', 'Gowun Dodum', sans-serif",
                             }}
                             title={`${format(day, 'M월 d일')} 전체 일정 (+${count}개)`}
                           >
